@@ -2,6 +2,8 @@
 
 **Protein Structure Prediction** (PSP) has always been one of the most popular applications of Deep Learning, and one of the most important fields of application of bioinformatics.
 
+Historical algorithms for analyzing bonding patterns and making PSP are **DEFINE**, **STRIDE**, **ScrewFit**, **SST**, and **DSSP**, which formally established a dictionary of all the currently known types of Secundary Structure.
+
 ## Background and Related Works
 This work focuses on replicating part of the results achieved in the following paper:
 > [(1) Zhou, J., & Troyanskaya, O. G., Deep Supervised and Convolutional Generative Stochastic Network for Protein Secondary Structure Prediction, 2014](https://arxiv.org/abs/1403.1347)
@@ -49,21 +51,21 @@ The **Secundary Structure** is the local spatial conformation of the sequence of
 
 There are **8** types of Secundary Structure for a protein:
 
-| Type     | Abbr    |
+| Type     | DSSP Abbr  |
 | :----: | :----: |
-| α-helix | 'H' |
+| α-helix (4-helix) | 'H' |
 | β-strand | 'E' |
-| loop / irregular | 'L' |
+| loop / irregular (coil) | 'L' or 'C' |
 | β-turn | 'T' |
 | bend | 'S' |
-| 3-helix ($3_10$-helix) | 'G' |
+| $3_10$-helix (3-helix) | 'G' |
 | β-bridge | 'B' |
-| 5-helix (π-helix) | 'I' |
+| π-helix (5-helix) | 'I' |
 
 It's curious to note that specific amino acids are more prone to be found in specific types of structure:
-+ M,A,L,E,K prefer *helices*
-+ F,I,T,V,W,Y prefer *strands*
-+ G,P are known as *helix breakers*
++ M, A, L, E, K prefer *helices*
++ F, I, T, V, W, Y prefer *strands*
++ G, P are known as *helix breakers*
 
 Predicting the Secundary Structure of a protein means basically to analyze the particular way amino acids link themselves and to find a pattern that classifies the structure as one of the **8** possible configurations.
 
