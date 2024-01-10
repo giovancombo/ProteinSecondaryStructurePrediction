@@ -29,28 +29,30 @@ Proteins are **chains of proteigenic amino acids**.
 
 Amino acids are, basically, **biomolecules**, and in nature there are 20 genetically encoded types of them, plus 2 special ones, which can be found in proteins with different frequencies:
 
-+ A - *Alanine*, 8,76%
-+ C - *Cysteine*, 1,38%
-+ D - *Aspartic Acid*, 5,49%
-+ E - *Glutamic Acid*, 6,32%
-+ F - *Phenylalanine*, 3,87%
-+ G - *Glycine*, 7,03%
-+ H - *Histidine*, 2,26%
-+ I - *Isoleucine*, 5,49%
-+ K - *Lysine*, 5,19%
-+ L - *Leucine*, 9,68%
-+ M - *Methionine*, 2,32%
-+ N - *Asparagine*, 3,93%
-+ O - *Pyrrolisine*, special
-+ P - *Proline*, 5,02%
-+ Q - *Glutamine*, 3,90%
-+ R - *Arginine*, 5,78%
-+ S - *Serine*, 7,14%
-+ T - *Threonine*, 5,53%
-+ U - *Selenocysteine*, special
-+ V - *Valine*, 6,73%
-+ W - *Tryptophan*, 1,25%
-+ Y - *Tyrosine*, 2,91%
+|Abbr|Amino Acid|Frequency in Proteins|
+|:-:|:-:|:-:|
+| A | *Alanine*| 8,76%|
+| C | *Cysteine*| 1,38%|
+| D | *Aspartic Acid*| 5,49%|
+| E | *Glutamic Acid*| 6,32%|
+| F | *Phenylalanine*| 3,87%|
+| G | *Glycine*| 7,03%|
+| H | *Histidine*| 2,26%|
+| I | *Isoleucine*| 5,49%|
+| K | *Lysine*| 5,19%|
+| L | *Leucine*| 9,68%|
+| M | *Methionine*| 2,32%|
+| N | *Asparagine*| 3,93%|
+| O | *Pyrrolisine*| special|
+| P | *Proline*| 5,02%|
+| Q | *Glutamine*| 3,90%|
+| R | *Arginine*| 5,78%|
+| S | *Serine*| 7,14%|
+| T | *Threonine*| 5,53%|
+| U | *Selenocysteine*| special|
+| V | *Valine*| 6,73%|
+| W | *Tryptophan*| 1,25%|
+| Y | *Tyrosine*| 2,91%|
 
 **Note:** The 2 special amino acids (O - Selenocysteine and U - Pyrrolysine) are not present in the datasets used for this exercise.
 
