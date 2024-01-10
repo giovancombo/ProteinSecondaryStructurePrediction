@@ -1,5 +1,7 @@
 # DL2023 | Using Transformers for Protein Secundary Structure Prediction
 
+https://en.wikipedia.org/wiki/Protein_secondary_structure?wprov=sfla1
+
 **Protein Structure Prediction** (PSP) has always been one of the most popular applications of Deep Learning, and one of the most important fields of application of bioinformatics and computational biology, as it is useful for *drug design* and *novel enzymes design*.
 
 Historical methods for determining/predicting the Secundary Structure of a protein from its Primary Structure were the **Chou-Fasman** method, the **GOR** method, then replaced by algorithms like **DEFINE**, **STRIDE**, **ScrewFit**, **SST**, and **DSSP**, which formally established a dictionary of all the currently known types of Secundary Structure.
