@@ -81,7 +81,7 @@ One thing to note is that PSSMs are *NOT* absolute embedding values: they are **
 
 Encoder-Decoder Transformers were originally presented in [(2)](https://arxiv.org/abs/1706.03762) as an Attention-based tool for Sequence-to-Sequence tasks such as Machine Translation.
 
-But the task addressed here is actually easier: at every input *character* (from the Primary Structure Vocabulary, of size 20) corresponds **one** output *character* (from the Secundary Structure Vocabulary, of size 8). In fact, with no surprises, this task can be solved using a ConvNet.
+But the task addressed here is actually easier: at every input *character* (from the Primary Structure Vocabulary, of size 20) corresponds **one** output *character* (also the Primary Structure Vocabulary), as their relationship is the hydrogen bond between them. In fact, with no surprises, this task can be solved using a ConvNet.
 This allows to guess that I could implement only an Encoder Transformer, getting rid of the Decoder, and replacing it with a simple classification head (e.g. an MLP) over every vector from the last layer of the remaining Transformer.
 
 ## Model Architecture
