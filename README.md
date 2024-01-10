@@ -21,6 +21,36 @@ Instead of using a ConvNet, though, a Transformer will be implemented, following
 The Primary Structure of a protein can be seen as a sequence of **characters** (instead of words) drawn from a **vocabulary of size 20**. "Translating" from the Primary to the Secundary Structure means converting the input sequence to another sequence of **characters** drawn from a **vocabulary of size 8** (i.e. the 8 possible classes of Secundary Structure), or **size 3**.
 The size of the vocabulary only depends on the level of prediction accuracy we want to achieve, as the size-3-vocabulary merges the 8 classes into 3 macroclasses. Thus, prediction on the 3-classes problem is easier.
 
+### Some biological facts
+Proteins are **chains of proteigenic amino acids**.
+
+Amino acids are, basically, **biomolecules**, and in nature there are 20 genetically encoded types of them, plus 2 special ones, which can be found in proteins with different frequencies:
+
++ A - *Alanine*, 8,76%
++ C - *Cysteine*, 1,38%
++ D - *Aspartic Acid*, 5,49%
++ E - *Glutamic Acid*, 6,32%
++ F - *Phenylalanine*, 3,87%
++ G - *Glycine*, 7,03%
++ H - *Histidine*, 2,26%
++ I - *Isoleucine*, 5,49%
++ K - *Lysine*, 5,19%
++ L - *Leucine*, 9,68%
++ M - *Methionine*, 2,32%
++ N - *Asparagine*, 3,93%
++ O - *Pyrrolisine*, special
++ P - *Proline*, 5,02%
++ Q - *Glutamine*, 3,90%
++ R - *Arginine*, 5,78%
++ S - *Serine*, 7,14%
++ T - *Threonine*, 5,53%
++ U - *Selenocysteine*, special
++ V - *Valine*, 6,73%
++ W - *Tryptophan*, 1,25%
++ Y - *Tyrosine*, 2,91%
+
+**Note:** The 2 special amino acids (O - Selenocysteine and U - Pyrrolysine) are not present in the datasets used for this exercise.
+
 ### Some insights about Data
 *Position-Specific Scoring Matrix* (PSSM) values can be interpreted as **word vectors** for the input characters. As these values are not obvious to calculate, I will use *CullPDB* and *CB513* datasets, provided by the authors of the [(1)](https://arxiv.org/abs/1403.1347) paper (available at [this link](https://www.princeton.edu/~jzthree/datasets/ICML2014)), which contain a bunch of ready-to-use PSSMs.
 
