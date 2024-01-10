@@ -2,7 +2,11 @@
 
 **Protein Structure Prediction** (PSP) has always been one of the most popular applications of Deep Learning, and one of the most important fields of application of bioinformatics and computational biology, as it is useful for *drug design* and *novel enzymes design*.
 
-Historical algorithms for determining/predicting the Secundary Structure of a protein from its Primary Steucture are **DEFINE**, **STRIDE**, **ScrewFit**, **SST**, and **DSSP**, which formally established a dictionary of all the currently known types of Secundary Structure.
+Historical methods for determining/predicting the Secundary Structure of a protein from its Primary Structure were the **Chou-Fasman** method, the **GOR** method, then replaced by algorithms like **DEFINE**, **STRIDE**, **ScrewFit**, **SST**, and **DSSP**, which formally established a dictionary of all the currently known types of Secundary Structure.
+
+Algorithms for *predicting* Secundary Structure are **PSIpred**, **SAM**, **PORTER**, **PROF** and **SABLE**.
+
+**!! Nota: Crea una tabella "benchmark" con le accuracies dei vari algoritmi storici, e poi più avanti anche una tabella benchmark riguardo i modelli usati sul dataset specifico CullPDB, per fare un confronto.**
 
 ## Background and Related Works
 This work focuses on replicating part of the results achieved in the following paper:
