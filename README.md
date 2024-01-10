@@ -5,7 +5,7 @@
 Predicting the Secundary Structure of a protein means basically to analyze the particular sequence of amino acids a protein is composed of (i.e. the Primary Structure), in order to classify a protein into one of the **8** possible classes of Secundary Structure:
 
 | SS Type     | SS Short    |
-| ----------- | ----------- |
+| :----: | :----: |
 | alpha helix | 'H' |
 | beta strand | 'E' |
 | loop or irregular | 'L' |
