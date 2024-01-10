@@ -3,14 +3,17 @@
 **Protein Structure Prediction** (PSP) has always been one of the most popular applications of Deep Learning, and one of the most important fields of application of bioinformatics.
 
 Predicting the Secundary Structure of a protein means basically to analyze the particular sequence of amino acids a protein is composed of (i.e. the Primary Structure), in order to classify a protein into one of the **8** possible classes of Secundary Structure:
-+ alpha helix ('H')
-+ beta strand ('E')
-+ loop or irregular ('L')
-+ beta turn ('T')
-+ bend ('S')
-+ 3-helix (3-10 helix) ('G')
-+ beta bridge ('B')
-+ 5-helix (pi helix) ('I')
+
+| SS Type     | SS Short    |
+| ----------- | ----------- |
+| alpha helix | 'H' |
+| beta strand | 'E' |
+| loop or irregular | 'L' |
+| beta turn | 'T' |
+| bend | 'S' |
+| 3-helix (3-10 helix) | 'G' |
+| beta bridge | 'B' |
+| 5-helix (pi helix) | 'I' |
 
 ## Background and Related Works
 This work focuses on replicating part of the results achieved in the following paper:
