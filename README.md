@@ -2,19 +2,6 @@
 
 **Protein Structure Prediction** (PSP) has always been one of the most popular applications of Deep Learning, and one of the most important fields of application of bioinformatics.
 
-Predicting the Secundary Structure of a protein means basically to analyze the particular sequence of amino acids a protein is composed of (i.e. the Primary Structure), in order to classify a protein into one of the **8** possible classes of Secundary Structure:
-
-| SS Type     | SS Short    |
-| :----: | :----: |
-| alpha helix | 'H' |
-| beta strand | 'E' |
-| loop or irregular | 'L' |
-| beta turn | 'T' |
-| bend | 'S' |
-| 3-helix (3-10 helix) | 'G' |
-| beta bridge | 'B' |
-| 5-helix (pi helix) | 'I' |
-
 ## Background and Related Works
 This work focuses on replicating part of the results achieved in the following paper:
 > [(1) Zhou, J., & Troyanskaya, O. G., Deep Supervised and Convolutional Generative Stochastic Network for Protein Secondary Structure Prediction, 2014](https://arxiv.org/abs/1403.1347)
@@ -56,14 +43,29 @@ Amino acids are, basically, **biomolecules**. In nature, there are 20 geneticall
 
 **Note:** The 2 special amino acids (O - Selenocysteine and U - Pyrrolysine) are not present in the datasets used for this exercise.
 
-The Secundary Structure of a protein is determined according to the way in which amino acids link together (e.g. hydrogen bonds). That means: **every single amino acid in the sequence is linked to another of the same sequence**, building what it could be interpreted as an end-to-end relationship.
+The raw chain of amino acids linked together via the amminic-carbossilic groups determines the **Primary Structure** of a protein.
 
-There are **3** main types of Secundary Structure for a protein:
+The **Secundary Structure** is the local spatial conformation of the sequence of amino acids. It is determined according to the way in which amino acids link together through hydrogen bonds. This means that **every single amino acid in the protein sequence is linked to another of the same sequence**, building what it could be interpreted as an end-to-end relationship.
 
-|:-:|
-|α-helix|
-|β-strand|
-|triple helix|
+There are **8** types of Secundary Structure for a protein:
+
+| Type     | Abbr    |
+| :----: | :----: |
+| α-helix | 'H' |
+| β-strand | 'E' |
+| loop / irregular | 'L' |
+| β-turn | 'T' |
+| bend | 'S' |
+| 3-helix ($3_10$-helix) | 'G' |
+| β-bridge | 'B' |
+| 5-helix (π-helix) | 'I' |
+
+It's curious to note that specific amino acids are more prone to be found in specific types of structure:
++ M,A,L,E,K prefer *helices*
++ F,I,T,V,W,Y prefer *strands*
++ G,P are known as *helix breakers*
+
+Predicting the Secundary Structure of a protein means basically to analyze the particular way amino acids link themselves and to find a pattern that classifies the structure as one of the **8** possible configurations.
 
 ### Some insights about Data
 *Position-Specific Scoring Matrix* (PSSM) values can be interpreted as **word vectors** for the input characters. As these values are not obvious to calculate, I will use *CullPDB* and *CB513* datasets, provided by the authors of the [(1)](https://arxiv.org/abs/1403.1347) paper (available at [this link](https://www.princeton.edu/~jzthree/datasets/ICML2014)), which contain a bunch of ready-to-use PSSMs.
