@@ -25,9 +25,9 @@ The Primary Structure of a protein can be seen as a sequence of **characters** (
 The size of the vocabulary only depends on the level of prediction accuracy we want to achieve, as the size-3-vocabulary merges the 8 classes into 3 macroclasses. Thus, prediction on the 3-classes problem is easier.
 
 ### Some biological facts
-Proteins are **chains of proteigenic amino acids**.
+Proteins are **chains of proteinogenic amino acids**.
 
-Amino acids are, basically, **biomolecules**, and in nature there are 20 genetically encoded types of them, plus 2 special ones, which can be found in proteins with different frequencies:
+Amino acids are, basically, **biomolecules**. In nature, there are 20 genetically encoded, "standard" types of them, plus 2 "special" ones:
 
 |Abbr|Amino Acid|Frequency in Proteins|
 |:-:|:-:|:-:|
@@ -55,6 +55,8 @@ Amino acids are, basically, **biomolecules**, and in nature there are 20 genetic
 | Y | *Tyrosine*| 2,91%|
 
 **Note:** The 2 special amino acids (O - Selenocysteine and U - Pyrrolysine) are not present in the datasets used for this exercise.
+
+The Secundary Structure of a protein is created as the amino acids are linked by hydrogen bonds. That is, **every single amino acid in the sequence is linked to another of the same sequence**, building what it could be seen as an end-to-end relationship.
 
 ### Some insights about Data
 *Position-Specific Scoring Matrix* (PSSM) values can be interpreted as **word vectors** for the input characters. As these values are not obvious to calculate, I will use *CullPDB* and *CB513* datasets, provided by the authors of the [(1)](https://arxiv.org/abs/1403.1347) paper (available at [this link](https://www.princeton.edu/~jzthree/datasets/ICML2014)), which contain a bunch of ready-to-use PSSMs.
