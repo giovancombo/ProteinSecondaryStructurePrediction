@@ -56,7 +56,14 @@ Amino acids are, basically, **biomolecules**. In nature, there are 20 geneticall
 
 **Note:** The 2 special amino acids (O - Selenocysteine and U - Pyrrolysine) are not present in the datasets used for this exercise.
 
-The Secundary Structure of a protein is created as the amino acids are linked by hydrogen bonds. That is, **every single amino acid in the sequence is linked to another of the same sequence**, building what it could be seen as an end-to-end relationship.
+The Secundary Structure of a protein is determined according to the way in which amino acids link together (e.g. hydrogen bonds). That means: **every single amino acid in the sequence is linked to another of the same sequence**, building what it could be interpreted as an end-to-end relationship.
+
+There are **3** main types of Secundary Structure for a protein:
+
+|:-:|
+|α-helix|
+|β-strand|
+|triple helix|
 
 ### Some insights about Data
 *Position-Specific Scoring Matrix* (PSSM) values can be interpreted as **word vectors** for the input characters. As these values are not obvious to calculate, I will use *CullPDB* and *CB513* datasets, provided by the authors of the [(1)](https://arxiv.org/abs/1403.1347) paper (available at [this link](https://www.princeton.edu/~jzthree/datasets/ICML2014)), which contain a bunch of ready-to-use PSSMs.
@@ -66,7 +73,7 @@ Proteins that show extra characters not included in the Primary Structure Vocabu
 Some proteins are composed of a very long sequence of amino acids: this could bring some computational problems, due to the $O(n^2)$ complexity of the Transformer, hence these particular proteins are divided in many shorter fragments. The longest proteins are segmented into blocks of length $N <<$ n_max, with N chosen accordingly with the available computational resources (at least, $N > 30$).
 
 ### Some insights about the Architecture
-One thing to note is that PSSMs are *NOT* absolute embeddings: they are **relative** to their positions and the protein itself. Thus, while implementing the Transformer architecture, it can result more efficient to prefer a **relative positional encoding** strategy (as explained in [this (3)](https://arxiv.org/abs/1803.02155) paper) over the absolute one employed in the [(2)](https://arxiv.org/abs/1706.03762) paper.
+One thing to note is that PSSMs are *NOT* absolute embedding values: they are **relative** to their mutual positions and in the protein sequence. Thus, while implementing the Transformer architecture, it can result more efficient to prefer a **relative positional encoding** strategy (as explained in [this (3)](https://arxiv.org/abs/1803.02155) paper) over the absolute one employed in the [(2)](https://arxiv.org/abs/1706.03762) paper.
 
 Encoder-Decoder Transformers were originally presented in [(2)](https://arxiv.org/abs/1706.03762) as an Attention-based tool for Sequence-to-Sequence tasks such as Machine Translation.
 
