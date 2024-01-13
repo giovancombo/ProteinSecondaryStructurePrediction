@@ -1,12 +1,12 @@
-# DL2023 | Using Transformers for Protein Secundary Structure Prediction
+# DL2023 | Using Transformers for Protein Secondary Structure Prediction
 
 https://en.wikipedia.org/wiki/Protein_secondary_structure?wprov=sfla1
 
 **Protein Structure Prediction** (PSP) has always been one of the most popular applications of Deep Learning, and one of the most important fields of application of bioinformatics and computational biology, as it is useful for *drug design* and *novel enzymes design*.
 
-Historical methods for determining/predicting the Secundary Structure of a protein from its Primary Structure were the **Chou-Fasman** method, the **GOR** method, then replaced by algorithms like **DEFINE**, **STRIDE**, **ScrewFit**, **SST**, and **DSSP**, which formally established a dictionary of all the currently known types of Secundary Structure.
+Historical methods for determining/predicting the Secondary Structure of a protein from its Primary Structure were the **Chou-Fasman** method, the **GOR** method, then replaced by algorithms like **DEFINE**, **STRIDE**, **ScrewFit**, **SST**, and **DSSP**, which formally established a dictionary of all the currently known types of Secondary Structure.
 
-Algorithms for *predicting* Secundary Structure are **PSIpred**, **SAM**, **PORTER**, **PROF** and **SABLE**.
+Algorithms for *predicting* Secondary Structure are **PSIpred**, **SAM**, **PORTER**, **PROF** and **SABLE**.
 
 **Guarda meglio gli altri algoritmi da menzionare**
 
@@ -18,7 +18,7 @@ This work focuses on replicating part of the results achieved in the following p
 
 Instead of using a ConvNet, though, a Transformer will be implemented, following the architecture presented in the original paper, [*Attention Is All You Need* (2)](https://arxiv.org/abs/1706.03762).
 
-The Primary Structure of a protein can be seen as a sequence of **characters** (instead of words) drawn from a **vocabulary of size 20**. "Translating" from the Primary to the Secundary Structure means converting the input sequence to another sequence of **characters** drawn from a **vocabulary of size 8** (i.e. the 8 possible classes of Secundary Structure), or **size 3**.
+The Primary Structure of a protein can be seen as a sequence of **characters** (instead of words) drawn from a **vocabulary of size 20**. "Translating" from the Primary to the Secondary Structure means converting the input sequence to another sequence of **characters** drawn from a **vocabulary of size 8** (i.e. the 8 possible classes of Secondary Structure), or **size 3**.
 The size of the vocabulary only depends on the level of prediction accuracy we want to achieve, as the size-3-vocabulary merges the 8 classes into 3 macroclasses. Thus, prediction on the 3-classes problem is easier.
 
 ### Some biological facts
@@ -57,9 +57,9 @@ The raw chain of amino acids linked together via the amminic-carbossilic groups 
 
 ---
 
-The **Secundary Structure** is the local spatial conformation of the sequence of amino acids. It is determined according to the way in which amino acids link together through hydrogen bonds. This means that **every single amino acid in the protein sequence is linked to another of the same sequence**, building what it could be interpreted as an end-to-end relationship.
+The **Secondary Structure** is the local spatial conformation of the sequence of amino acids. It is determined according to the way in which amino acids link together through hydrogen bonds. This means that **every single amino acid in the protein sequence is linked to another of the same sequence**, building what it could be interpreted as an end-to-end relationship.
 
-There are **8** types of Secundary Structure for a protein:
+There are **8** types of Secondary Structure for a protein:
 
 | Type     | DSSP Abbr  |
 | :----: | :----: |
@@ -94,7 +94,7 @@ One thing to note is that PSSMs are *NOT* absolute embedding values: they are **
 
 Encoder-Decoder Transformers were originally presented in [(2)](https://arxiv.org/abs/1706.03762) as an Attention-based tool for Sequence-to-Sequence tasks such as Machine Translation.
 
-But the task addressed here is actually easier, as it is a **Sequence Classification** task: at every input *character* (from the Primary Structure Vocabulary, of size 20) corresponds **one** output *character* (from the Secundary Structure Vocabulary, of size 8). In fact, with no surprises, this task can be solved using a ConvNet.
+But the task addressed here is actually easier, as it is a **Sequence Classification** task: at every input *character* (from the Primary Structure Vocabulary, of size 20) corresponds **one** output *character* (from the Secondary Structure Vocabulary, of size 8). In fact, with no surprises, this task can be solved using a ConvNet.
 This allows to guess that I could implement only an Encoder Transformer, getting rid of the Decoder, and replacing it with a simple classification head (e.g. an MLP) over every vector from the last layer of the remaining Transformer.
 
 ---
