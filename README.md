@@ -143,6 +143,24 @@ In the second phase, local windows of a limited number of elements, shifted alon
 
 The Dataset (of 6133 proteins) was divided randomly into training (5600), validation (256) and testing (272) sets.
 
+The dataset is currently in numpy format as a (N protein x k features) matrix. You can reshape it to (N protein x 700 amino acids x 57 features) first. 
+
+The 57 features are:
+[0,22): amino acid residues, with the order of 'A', 'C', 'E', 'D', 'G', 'F', 'I', 'H', 'K', 'M', 'L', 'N', 'Q', 'P', 'S', 'R', 'T', 'W', 'V', 'Y', 'X','NoSeq'
+[22,31): Secondary structure labels, with the sequence of 'L', 'B', 'E', 'G', 'I', 'H', 'S', 'T','NoSeq'
+[31,33): N- and C- terminals;
+[33,35): relative and absolute solvent accessibility, used only for training. (absolute accessibility is thresholded at 15; relative accessibility is normalized by the largest accessibility value in a protein and thresholded at 0.15; original solvent accessibility is computed by DSSP)
+[35,57): sequence profile. Note the order of amino acid residues is ACDEFGHIKLMNPQRSTVWXY and it is different from the order for amino acid residues
+
+The last feature of both amino acid residues and secondary structure labels just mark end of the protein sequence. 
+[22,31) and [33,35) are hidden during testing.
+
+---
+
+A position weight matrix (PWM), also known as a position-specific weight matrix (PSWM) or position-specific scoring matrix (PSSM), is a commonly used representation of motifs (patterns) in biological sequences.
+
+PWMs are often derived from a set of aligned sequences that are thought to be functionally related and have become an important part of many software tools for computational motif discovery.
+
 
 ## Model Architecture
 
