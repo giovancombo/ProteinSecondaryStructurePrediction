@@ -89,6 +89,8 @@ Proteins that show extra characters not included in the Primary Structure Vocabu
 
 Some proteins are composed of a very long sequence of amino acids: this could bring some computational problems, due to the $O(n^2)$ complexity of the Transformer, hence these particular proteins are divided in many shorter fragments. The longest proteins are segmented into blocks of length $N <<$ n_max, with N chosen accordingly with the available computational resources (at least, $N > 30$).
 
+As the length of most protein sequences is less than 700, the one-hot coding of residue sequences and the size of the PSSM are generally unified into 700 × 21. That is, the sequences whose length is greater than 700 will be divided into two overlapping sequences, while the sequences whose length is less than 700 will be augmented by filling in zeros. Thus, the input feature of the prediction model is a matrix with the size of 700 × 42.
+
 ### Some insights about the Architecture
 One thing to note is that PSSMs are *NOT* absolute embedding values: they are **relative** to their mutual positions and in the protein sequence. Thus, while implementing the Transformer architecture, it can result more efficient to prefer a **relative positional encoding** strategy (as explained in [this (3)](https://arxiv.org/abs/1803.02155) paper) over the absolute one employed in the [(2)](https://arxiv.org/abs/1706.03762) paper.
 
@@ -161,7 +163,6 @@ A position weight matrix (PWM), also known as a position-specific weight matrix 
 
 PWMs are often derived from a set of aligned sequences that are thought to be functionally related and have become an important part of many software tools for computational motif discovery.
 
-
 ## Model Architecture
 
 ### Encoder
@@ -175,10 +176,36 @@ PWMs are often derived from a set of aligned sequences that are thought to be fu
 ### Decoder
 
 ## Training and Results
+Batch size = 4 **proteins**
+
+### Ablation
+Si può provare a ripetere il training aggiungendo i vettori one hot o togliendoli
 
 ## Conclusion
 
 ## References
+For Data, Features, Architecture:
+https://cs.rice.edu/~ogilvie/comp571/pssm/
++ https://arxiv.org/abs/1403.1347
++ https://arxiv.org/abs/1512.03385
++ https://arxiv.org/abs/1607.06450
++ https://arxiv.org/abs/1412.6980
++ https://proceedings.mlr.press/v9/glorot10a/glorot10a.pdf
++ https://www.princeton.edu/~jzthree/datasets/ICML2014/
++ https://aistudio.baidu.com/datasetdetail/79771
++ https://arxiv.org/abs/1706.03762
++ https://en.wikipedia.org/wiki/Position_weight_matrix
++ https://github.com/amckenna41/DCBLSTM_PSP
++ https://github.com/LucaAngioloni/ProteinSecondaryStructure-CNN
++ https://www.sciencedirect.com/science/article/pii/S2001037022005062
++ https://www.frontiersin.org/articles/10.3389/fbioe.2022.901018/full
++ https://arxiv.org/abs/1702.03865
+
+For Relative Positional Encoding:
++ https://arxiv.org/abs/1803.02155
++ https://arxiv.org/abs/1811.07143
++ https://arxiv.org/abs/2101.11605
++ https://github.com/The-AI-Summer/self-attention-cv
 
 ---
 
