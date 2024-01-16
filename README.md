@@ -211,3 +211,6 @@ For Relative Positional Encoding:
 
 IDEE DI ALTRE COSE DA FARE:
 + File di testo requirements.txt con tutti i moduli e pacchetti usati, versione minima necessaria (pip install -r requirements.txt nello script)
++ Provare training con absolute e relative positional encoding, e senza nulla
++ Provare training con anche features onehot e con solo PSSM
++ Provare training con MLP e Decoder
