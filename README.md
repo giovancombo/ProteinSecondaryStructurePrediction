@@ -163,6 +163,10 @@ A position weight matrix (PWM), also known as a position-specific weight matrix 
 
 PWMs are often derived from a set of aligned sequences that are thought to be functionally related and have become an important part of many software tools for computational motif discovery.
 
+---
+
+
+
 ## Model Architecture
 
 ### Encoder
