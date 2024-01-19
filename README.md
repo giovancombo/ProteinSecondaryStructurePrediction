@@ -165,7 +165,12 @@ PWMs are often derived from a set of aligned sequences that are thought to be fu
 
 ---
 
+The PSSMs were generated from PSI-BLAST profiles, which contain important evolution information.
 
+The fundamental elements of the secondary structure of proteins are -helices, -sheets, coils, and turns. Some methods have been developed for defining various protein secondary structure elements from the atomic coordinates in the Protein Data Bank (PDB), such as DSSP,4 STRIDE,5 and DEFINE.6 According to DSSP, 8 types of protein secondary structure elements were classified and denoted by letters: H (-helix), E (extended -strand), G (310 helix), I (-helix), B (isolated -strand), T (turn), S (bend) and “_” (coil). The 8 classes are usually reduced to three states, helix (H), sheet (E), and coil (C) by different reduction methods.7 Thus, the secondary structure prediction can be analyzed as a typical three-state pattern recognition or classification problem, where the secondary structure class of a given amino acid residue in a protein is predicted based on its sequence features.
+
+ each residue is coded as a 21-dimensional vector,
+where the first 20 elements of the vector are the corresponding elements in PSI-BLAST matrix.
 
 ## Model Architecture
 
@@ -205,6 +210,7 @@ https://cs.rice.edu/~ogilvie/comp571/pssm/
 + https://www.frontiersin.org/articles/10.3389/fbioe.2022.901018/full
 + https://arxiv.org/abs/1702.03865
 + https://ieeexplore.ieee.org/document/10080387
++ https://www.baskent.edu.tr/~hogul/secondary.pdf
 
 For Relative Positional Encoding:
 + https://arxiv.org/abs/1803.02155
