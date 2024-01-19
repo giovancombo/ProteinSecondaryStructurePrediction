@@ -172,6 +172,78 @@ The fundamental elements of the secondary structure of proteins are -helices, -
  each residue is coded as a 21-dimensional vector,
 where the first 20 elements of the vector are the corresponding elements in PSI-BLAST matrix.
 
+---
+
+Using a DSSP algorithm [14], the three general states were transformed and expanded into eight fine-grained states. They are 310 helix (G), α-helix (H), π-helix (I), β-strand (E), bridge (B), turn (T), high curvature loop (S), and others (L).
+
+Prediction accuracy is
+greatly enhanced by the inclusion of sequence evolutionary
+profiles obtained from Multiple Sequence Alignments
+(MSA), known as Position Specific Scoring Matrices
+(PSSM).
+
+In DeepACLSTM [18], the benefits of the CNN and
+LSTM networks are integrated. They use CNN to obtain the
+protein's local features and BLSTM to get information on
+long distance dependency. The model known as
+MUFOLD-SS [19] is a Google Inception network [20] based
+Deep3I network, also referred to as a deep inception-insideinception
+network.The improvised model of MULFOLD-SS,
+known as SAINT [21] integrates the self-attention
+mechanism and Deep3I, and increases the effectiveness of
+gathering long-distance information on contacts in
+sequences.
+The OPUS-TASS approach integrated the architectures
+of CNN, BLSTM, and Transformer [22]. In the work
+proposed in [23], the MLPRNN architecture consists of two
+layer stacked BGRU(Bidirectional Gated Recurrent Unit)
+block.
+
+In both the proposed models, because an α-helix typically
+has eleven residues and a β-strand typically has six, the
+window size was selected to exceed the value of 11. Based
+on the trade-off between performance and training, a window
+size of 17 was chosen.
+
+---
+
+OPUS-TASS PAPER
+
+Determining protein structure with experimental approaches such as
+X-ray crystallography, Cryo-EM and NMR are usually timeconsuming.
+To tackle this issue, many computational prediction
+methods have been proposed.
+
+In recent years, a new architecture named Transformer (Vaswani
+et al., 2017) has been proposed, achieving better performance comparing
+to the traditional bidirectional recurrent neural networks in
+most Natural Language Processing (NLP) tasks. Transformer is a
+self-attention model, which is able to capture the interactions between
+the two items theoretically with arbitrary distance.
+
+---
+
+> PAPER SHUFFLENET_SS: Protein secondary structure prediction using a lightweight convolutional network and label distribution aware margin loss
+
+3-state prediction:
++ Helices (H,G,I)
++ Strands (B,E)
++ Coils (S,T,L)
+
+8-state prediction can provide more valuable local structure information, and is more challenging because eight states have an extremely imbalanced distribution in protein structures (metti tabella con numeri e percentuali sul dataset di frequenza di ogni classe).
+
+When training a deep PSSP model, a specific number of protein chains needs to be randomly selected from the training set to form a minibatch. The length of protein chains in minibatches is usually not equal due to the variable length distribution of protein chains. Therefore, it is necessary to perform zero padding on shorter protein chains so that all protein chains in the minibatch have the same length.
+
+The input of our network model includes two parts: a feature data tensor and a binary mask matrix. The shape of the feature data tensor is (N, C, L), where N represents the number of protein chains in a minibatch, C represents the length of the feature vector corresponding to each amino acid residue, and L represents the maximum protein chain length in a minibatch. The size of the binary mask matrix is (N, L), where 1 indicates a nonpadded position and 0 indicates a padded position.
+
+In the current PSSP models, all secondary structure categories are treated equally during training without considering that their distribution is extremely imbalanced.
+
+Considering this, we adopt the **label distribution aware margin loss**, that encourages rare classes to have larger margins to train the proposed network. This can enhance the network's ability to learn rare classes without sacrificing the network's ability to fit frequent classes.
+
+When the standard cross-entropy loss without considering class imbalance is used for training, the rare classes can only obtain extremely low classification accuracy due to being overwhelmed by larger classes during training.
+
+in addition to the LDAM loss, there are other recently introduced losses, such as the class-balanced loss [43], focal loss [44], seesaw loss [45], equalization loss [46] and logit adjustment loss [47], that can effectively address the imbalanced classification problem with a long-tail distribution. In particular, the application scenarios of these losses for classification problems usually assume that the training set is class imbalanced while the validation and test sets are class balanced. However, all datasets used in eight-state PSSP are class imbalanced. In practice, we observe that only the LDAM loss can improve the prediction performance of the protein secondary structure;
+
 ## Model Architecture
 
 ### Encoder
