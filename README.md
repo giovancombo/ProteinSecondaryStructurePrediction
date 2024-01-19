@@ -252,6 +252,14 @@ in addition to the LDAM loss, there are other recently introduced losses, such a
 
 #### Relative Positional Encoding
 
+Since self-attention networks are inherently position agnostic, we need to explicitly encode frame positions in the model. The original paper used sinusoidal position encodings for this purpose.
+
+While absolute positional encodings work reasonably well, there have also been efforts to exploit pairwise, relative positional information. In Self-Attention with Relative Position Representations, Shaw et al. introduced a way of using pairwise distances as a way of creating positional encodings.
+
+There are a number of reasons why we might want to use relative positional encodings instead of absolute ones. First, using absolute positional information necessarily means that there is a limit to the number of tokens a model can process. Say a language model can only encode up to 1024 positions. This necessarily means that any sequence longer than 1024 tokens cannot be processed by the model. Using relative pairwise distances can more gracefully solve this problem, though not without limitations. Relative positional encodings can generalize to sequences of unseen lengths, since theoretically the only information it encodes is the relative pairwise distance between two tokens.
+
+Relative positional information is supplied to the model on two levels: values and keys. This becomes apparent in the two modified self-attention equations.
+
 ### Classification Head
 
 ### Decoder
