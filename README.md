@@ -101,6 +101,12 @@ This allows to guess that I could implement only an Encoder Transformer, getting
 
 ---
 
+**COSE TEORICHE SU OGNI CLASSE DI SS**
+
+
+
+---
+
 **COSE AGGIUNTE - DA INTEGRARE ALLE COSE SOPRA**
 
 https://github.com/amckenna41/DCBLSTM_PSP
@@ -260,6 +266,12 @@ There are a number of reasons why we might want to use relative positional encod
 
 Relative positional information is supplied to the model on two levels: values and keys. This becomes apparent in the two modified self-attention equations.
 
+instead of simply combining semantic embeddings with absolute positional ones, relative positional information is added to keys and values on the fly during attention calculation.
+
+calculating relative positional encodings as introduced in Shaw et al. requires O(L^2 * D) memory due to the introduction of an additional relative positional encoding matrix. Here, L denotes the length of the sequence, and D, the hidden state dimension used by the model.
+
+**The key concept is that Distance between two characters is more important than their absolute positions in the sequence**
+
 ### Classification Head
 
 ### Decoder
@@ -297,6 +309,8 @@ For Relative Positional Encoding:
 + https://arxiv.org/abs/1811.07143
 + https://arxiv.org/abs/2101.11605
 + https://github.com/The-AI-Summer/self-attention-cv
++ https://jaketae.github.io/study/relative-positional-encoding/
++ https://arxiv.org/pdf/1911.00203.pdf
 
 ---
 
