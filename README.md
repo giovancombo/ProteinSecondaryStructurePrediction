@@ -12,7 +12,8 @@ Algorithms for *predicting* Secondary Structure are **PSIpred**, **SAM**, **PORT
 
 **!! Nota: Crea una tabella "benchmark" con le accuracies dei vari algoritmi storici, e poi più avanti anche una tabella benchmark riguardo i modelli usati sul dataset specifico CullPDB, per fare un confronto.**
 
-## Background and Related Works
+## 1. Introduction and Related Works
+
 This work focuses on replicating part of the results achieved in the following paper:
 > [(1) Zhou, J., & Troyanskaya, O. G., Deep Supervised and Convolutional Generative Stochastic Network for Protein Secondary Structure Prediction, 2014](https://arxiv.org/abs/1403.1347)
 
