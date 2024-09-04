@@ -1,5 +1,7 @@
 # DL2023 | Protein Secondary Structure Prediction using Transformers
 
+The field of protein secondary structure prediction has evolved significantly over the past few decades, with methods ranging from simple statistical approaches to sophisticated machine learning models. This progression reflects both our growing understanding of protein structures and the increasing computational power available to researchers.
+
 ## 1 - Introduction
 
 This work focuses on replicating part of the results achieved in the following paper:
@@ -84,3 +86,42 @@ Encoder-Decoder Transformers were originally presented in [(2)](https://arxiv.or
 
 But the task addressed here is actually easier, as it is a **Sequence Classification** task: at every input *character* (from the Primary Structure Vocabulary, of size 20) corresponds **one** output *character* (from the Secondary Structure Vocabulary, of size 8). In fact, with no surprises, this task can be solved using a ConvNet.
 This allows to guess that I could implement only an Encoder Transformer, getting rid of the Decoder, and replacing it with a simple classification head (e.g. an MLP) over every vector from the last layer of the remaining Transformer.
+
+---
+
+## 2 - Related Works
+
+Early approaches like Chou-Fasman and GOR algorithms relied on simple statistical propensities of amino acids, achieving modest accuracies of 50-60%.
+
+A major breakthrough came with the introduction of machine learning techniques. Rost and Sander's PHD method (1993) employed neural networks and evolutionary information, pushing accuracies above 70%. The use of Position-Specific Scoring Matrices (PSSMs) became crucial, providing context beyond the amino acid sequence alone.
+
+PSIPRED, developed by Jones in 1999, set a new benchmark with its two-stage neural network approach, achieving around 80% accuracy for three-state prediction. This marked the beginning of modern, high-accuracy prediction methods.
+
+The deep learning era brought further advancements. Zhou and Troyanskaya's 2014 work with stacked sparse autoencoders demonstrated the power of deep architectures in capturing both local and global structural information. Recurrent Neural Networks, particularly LSTMs, proved effective in modeling long-range dependencies, as shown in works like DeepCNF (Sønderby and Winther, 2014) and DCRNN (Li and Yu, 2016).
+
+Convolutional Neural Networks also found success, especially in capturing local structural motifs. Wang et al.'s DeepCNF (2016) combined CNNs with Conditional Random Fields, achieving state-of-the-art performance by modeling both local and global sequence-structure relationships.
+
+Recent years have seen the emergence of attention mechanisms and transformer architectures. While primarily developed for natural language processing, these models have shown promise in understanding complex protein structures, as demonstrated by AlphaFold (Jumper et al., 2021) in tertiary structure prediction.
+
+The current trend is towards hybrid models that combine different architectures. OPUS-TASS (Xu et al., 2020) integrates CNNs, bidirectional LSTMs, and transformer layers, achieving high accuracy in both 3-state and 8-state predictions.
+
+---
+
+## 3 - Method
+
+---
+
+## 4 - Experimental setup
+
+---
+
+## 5 - Results
+
+---
+
+## 6 - Ablation studies
+
+---
+
+## 7 - Conclusion
+
