@@ -2,7 +2,6 @@
 # Created by Giovanni Colombo - Mat. 7092745
 # Dedicated Repository on GitHub at https://github.com/giovancombo/ProteinSecondaryStructurePrediction
 
-# Hyperparameter configuration
 
 TEST_ONLY: False
 LOADED_PATH: "checkpoints/embd64_bs2_lr0.001_8heads_8layers_dr0.0_wd0.0001_ls0.0_gamma0.13265/bestmodel.pth"
@@ -11,20 +10,20 @@ TRAIN_PATH: "data/cullpdb+profile_6133_FINAL.npy"
 TEST_PATH: "data/cb513+profile_split1_FINAL.npy"
 
 # Model settings
-embd_dim: 64                # Embedding dimensions for each aminoacid token
-n_heads: 8                  # Number of Self-Attention heads: TOO MANY HEADS CAN LEAD TO OVERFITTING
-n_layers: 2                 # Number of Blocks of the Transformer
-clf_hid_dim: 16             # Hidden dimension of the Classification Head
+embd_dim: 64                      # Embedding dimensions for each aminoacid token
+n_heads: 8                        # Number of Self-Attention heads
+n_layers: 8                       # Number of Blocks of the Transformer
+clf_hid_dim: 256                  # Hidden dimension of the Classification Head
 
 # Training settings
-batch_size: 32
-epochs: 2
+batch_size: 2
+epochs: 20
 learning_rate: 0.001
 weight_decay: 0.0001
 label_smoothing: 0.
 dropout: 0.
 gamma_scheduler: 0.1
-max_relative_position: 80   # Maximum relative distance bw aminoacids in sequence (for Relative Positional Encoding)
+max_relative_position: 80        # Maximum relative distance bw aminoacids in sequence (for Relative Positional Encoding)
 
 # Logging settings
 log_freq: 10
