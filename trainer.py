@@ -80,7 +80,7 @@ class Trainer:
 
             if batches_ct % log_freq == 0:
                 #print(f"Current batch: {correct} correct over {total} elements >> Batch Accuracy: {accuracy:.4f}%")
-                print(f"Epoch {epoch+1} so far: {epoch_correct} correct over {epoch_total} elements >> Epoch Accuracy: {epoch_accuracy:.4f}%")
+                print(f"\nEpoch {epoch+1} so far: {epoch_correct} correct over {epoch_total} elements >> Epoch Accuracy: {epoch_accuracy:.4f}%")
 
         train_accuracy = sum(accuracies) / len(accuracies)
         train_loss = sum(losses) / len(losses)
@@ -110,7 +110,7 @@ class Trainer:
         all_predictions, all_targets = [], []
 
         with torch.no_grad():
-            for x_residues, x_pssm, y_targets, pad_mask in tqdm(testloader, desc = f"Evaluating epoch {epoch} on CB513 dataset: " if epoch is not None else "Testing Model on CB513 dataset: "):
+            for x_residues, x_pssm, y_targets, pad_mask in tqdm(testloader, desc = f"Evaluating epoch {epoch+1} on CB513 dataset: " if epoch is not None else "Testing Model on CB513 dataset: "):
                 x_residues = x_residues.to(self.device)
                 x_pssm = x_pssm.to(self.device)
                 pad_mask = pad_mask.to(self.device)
