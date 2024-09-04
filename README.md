@@ -56,7 +56,7 @@ There are **8** types of Secondary Structure for a protein:
 | loop / irregular (coil) | 'L' or 'C' |
 | β-turn | 'T' |
 | bend | 'S' |
-| $3_10$-helix (3-helix) | 'G' |
+| $3_{10}$-helix (3-helix) | 'G' |
 | β-bridge | 'B' |
 | π-helix (5-helix) | 'I' |
 
