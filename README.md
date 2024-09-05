@@ -1,5 +1,7 @@
 # DL2023 | Protein Secondary Structure Prediction using Transformers
 
+<img src="https://github.com/giovancombo/ProteinSecondaryStructurePrediction/blob/main/images/report/introbanner.png">
+
 The field of protein secondary structure prediction has evolved significantly over the past few decades, with methods ranging from simple statistical approaches to sophisticated machine learning models. This progression reflects both our growing understanding of protein structures and the increasing computational power available to researchers.
 
 ## 1 - Introduction
