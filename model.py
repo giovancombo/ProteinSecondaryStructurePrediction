@@ -4,6 +4,18 @@
 
 import torch
 import torch.nn as nn
+import numpy as np
+import random
+
+
+def set_seed(seed):
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed_all(seed)
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
 
 
 class RelativePositionalEncoding(nn.Module):
@@ -58,10 +70,12 @@ class MultiHeadAttention(nn.Module):
         max_relative_position (int): Maximum relative distance for positional encoding.
         dropout (float): Dropout rate.
         device (torch.device): Device to run the module on.
+        seed (int): Random seed for reproducibility.
     """
 
-    def __init__(self, d_model, n_heads, max_relative_position, dropout, device):
+    def __init__(self, d_model, n_heads, max_relative_position, dropout, device, seed = 42):
         super().__init__()
+        set_seed(seed)
 
         assert d_model % n_heads == 0, "d_model (= embed_dim + 21) must be divisible by n_heads"
         
@@ -106,8 +120,7 @@ class MultiHeadAttention(nn.Module):
         rel_k2 = self.rel_pos_k(len_q, len_k)                                                               # (700,700,7)
         attn_2 = torch.matmul(rel_q2, rel_k2.transpose(1, 2)).transpose(0, 1)                               # (56,700,7)
         attn_2 = attn_2.contiguous().view(batch_size, self.n_heads, len_q, len_k)                           # (8,7,700,700)
-
-        # Total attention scores
+        
         attn = (attn_1 + attn_2) / self.scale                                                   # (8,7,700,700)
 
         # Masking
@@ -123,7 +136,7 @@ class MultiHeadAttention(nn.Module):
         cxt_2 = attn.permute(2, 0, 1, 3).contiguous().view(len_q, batch_size*self.n_heads, len_k)   # (700,56,700)
         cxt_2 = torch.matmul(cxt_2, rel_v2)                                                         # (700,56,7)
         cxt_2 = cxt_2.transpose(0, 1).contiguous().view(batch_size, self.n_heads, len_q, self.head_size)    # (8,7,700,7)
-
+  
         context = cxt_1 + cxt_2                                         # (batch_size, n_heads, query_len, head_size)
         context = context.permute(0, 2, 1, 3).contiguous()              # (batch_size, query_len, n_heads, head_size)
         context = context.view(batch_size, -1, self.d_model)            # (batch_size, query_len, d_model)
@@ -166,12 +179,14 @@ class EncoderLayer(nn.Module):
         max_relative_position (int): Maximum relative distance for positional encoding.
         dropout (float): Dropout rate.
         device (torch.device): Device to run the module on.
+        seed (int): Random seed for reproducibility.
     """
 
-    def __init__(self, d_model, n_heads, max_relative_position, dropout, device):
+    def __init__(self, d_model, n_heads, max_relative_position, dropout, device, seed = 42):
         super().__init__()
+        set_seed(seed)
 
-        self.multi_attn = MultiHeadAttention(d_model, n_heads, max_relative_position, dropout, device)        
+        self.multi_attn = MultiHeadAttention(d_model, n_heads, max_relative_position, dropout, device, seed)        
         self.ffwd = FeedForward(d_model)
 
         self.layernorm_1 = nn.LayerNorm(d_model)
@@ -201,12 +216,14 @@ class Encoder(nn.Module):
         max_relative_position (int): Maximum relative distance for positional encoding.
         dropout (float): Dropout rate.
         device (torch.device): Device to run the module on.
+        seed (int): Random seed for reproducibility.
     """
 
-    def __init__(self, d_model, n_heads, n_layers, max_relative_position, dropout, device):
+    def __init__(self, d_model, n_heads, n_layers, max_relative_position, dropout, device, seed = 42):
         super().__init__()
+        set_seed(seed)
 
-        self.enc_layers = nn.ModuleList([EncoderLayer(d_model, n_heads, max_relative_position, dropout, device)
+        self.enc_layers = nn.ModuleList([EncoderLayer(d_model, n_heads, max_relative_position, dropout, device, seed)
                                          for _ in range(n_layers)])
 
     def forward(self, x, mask = None):
@@ -266,14 +283,16 @@ class ProteinTransformer(nn.Module):
         clf_hid_dim (int): Hidden dimension of the classification head.
         dropout (float): Dropout rate.
         device (torch.device): Device (CPU or GPU) to run the module on.
+        seed (int): Random seed for reproducibility.
     """
 
-    def __init__(self, vocab_size, embd_dim, classes, n_heads, n_layers, max_relative_position, clf_hid_dim, dropout, device):
+    def __init__(self, vocab_size, embd_dim, classes, n_heads, n_layers, max_relative_position, clf_hid_dim, dropout, device, seed = 42):
         super().__init__()
+        set_seed(seed)
 
         self.embd = nn.Embedding(vocab_size, embd_dim, padding_idx = 20)
         d_model = embd_dim + 21
-        self.encoder = Encoder(d_model, n_heads, n_layers, max_relative_position, dropout, device)
+        self.encoder = Encoder(d_model, n_heads, n_layers, max_relative_position, dropout, device, seed)
         self.clf = ClassificationHead(d_model, clf_hid_dim, classes, dropout)
 
         nn.init.normal_(self.embd.weight, mean=0, std=d_model**-0.5)
