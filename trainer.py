@@ -15,17 +15,19 @@ class Trainer:
     Attributes:
         model (nn.Module): The neural network model to be trained.
         device (torch.device): The device (CPU or GPU) on which to perform the computations.
+        gradient_clipping (bool): Whether to apply gradient clipping during training.
         epochs (int): The total number of training epochs.
         examples_ct (int): Counter for the number of protein elements processed during training.
     """
 
-    def __init__(self, model, device, epochs = None):
+    def __init__(self, model, device, gradient_clipping = False, epochs = None):
         self.model = model
         self.device = device
+        self.gradient_clipping = gradient_clipping
         self.epochs = epochs
         self.examples_ct = 0
 
-    def train(self, trainloader, criterion, optimizer, log_freq, epoch):
+    def train(self, trainloader, criterion, optimizer, log_freq, max_grad_norm, epoch, wandb_log = False):
         """
         Train the model in batches for one epoch.
 
@@ -57,6 +59,8 @@ class Trainer:
             loss = criterion(outputs.view(-1, outputs.size(-1)), y_targets_indices.view(-1))
 
             loss.backward()
+            if self.gradient_clipping:
+                torch.nn.utils.clip_grad_norm_(self.model.parameters(), max_norm = max_grad_norm)
             optimizer.step()
 
             batches_ct += 1
@@ -75,8 +79,9 @@ class Trainer:
             losses.append(loss.item())
             accuracies.append(accuracy)
 
-            wandb.log({'Training/train_loss': loss.item(),
-                'Training/train_accuracy': accuracy}, step = self.examples_ct)
+            if wandb_log:
+                wandb.log({'Training/train_loss': loss.item(),
+                    'Training/train_accuracy': accuracy}, step = self.examples_ct)
 
             if batches_ct % log_freq == 0:
                 #print(f"Current batch: {correct} correct over {total} elements >> Batch Accuracy: {accuracy:.4f}%")
