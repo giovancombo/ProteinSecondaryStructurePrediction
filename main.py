@@ -12,11 +12,26 @@ from torch.optim.lr_scheduler import ExponentialLR, ReduceLROnPlateau
 import time
 import yaml
 import wandb
+import random
 
 from trainer import Trainer
 from model import ProteinTransformer
+from losses import FocalLoss
 from my_utils import *
 
+
+def set_seed(seed):
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
+
+def seed_worker(worker_id):
+    worker_seed = torch.initial_seed() % 2**32
+    np.random.seed(worker_seed)
+    random.seed(worker_seed)
 
 # Loading the .yaml configuration file
 with open("params.yaml", 'r') as stream:
@@ -31,6 +46,8 @@ LOADED_PATH = config['LOADED_PATH']
 TRAIN_PATH = config['TRAIN_PATH']
 TEST_PATH = config['TEST_PATH']
 
+set_seed(config['seed'])
+
 aminoacids = 21
 classes = 9
 protein_len = 700
@@ -40,14 +57,23 @@ embd_dim = config['embd_dim'] - aminoacids
 n_heads = config['n_heads']
 n_layers = config['n_layers']
 clf_hid_dim = config['clf_hid_dim']
+
 batch_size = config['batch_size']
 epochs = config['epochs']
+gamma_scheduler = config['gamma_scheduler']
 learning_rate = config['learning_rate']
 weight_decay = config['weight_decay']
-label_smoothing = config['label_smoothing']
 dropout = config['dropout']
-gamma_scheduler = config['gamma_scheduler']
+
+loss_function = config['loss_function']
+label_smoothing = config['label_smoothing']
+focalloss_alpha = config['focalloss_alpha']
+focalloss_gamma = config['focalloss_gamma']
+gradient_clipping = config['gradient_clipping']
+max_grad_norm = config['max_grad_norm']
 max_relative_position = config['max_relative_position']
+
+wandb_log = config['wandb_log']
 log_freq = config['log_freq']
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -64,8 +90,8 @@ if __name__ == "__main__":
     cb513_data = torch.from_numpy(np.load(TEST_PATH))               # (513, 700, 51)
 
     # One-hot and integer aminoacid residues
-    train_residues_1h = cullpdb_data[:,:,:21]                       # (3880, 700, 21)
-    test_residues_1h = cb513_data[:,:,:21]                          # (513, 700, 21)
+    train_residues_1h = cullpdb_data[:,:,:21].type(torch.float)     # (3880, 700, 21)
+    test_residues_1h = cb513_data[:,:,:21].type(torch.float)        # (513, 700, 21)
     train_residues_int = onehot_to_int(train_residues_1h)           # (3880,700)
     test_residues_int = onehot_to_int(test_residues_1h)             # (513,700)
 
@@ -88,20 +114,27 @@ if __name__ == "__main__":
     test_set = TensorDataset(test_residues_int, test_pssm, test_targets, test_padding_mask)
 
     # Creating the dataloaders
-    trainloader = DataLoader(train_set, batch_size = batch_size, shuffle = True)
+    g = torch.Generator()
+    g.manual_seed(config['seed'])
+    trainloader = DataLoader(train_set, batch_size = batch_size, shuffle = True, worker_init_fn=seed_worker, generator=g)
     testloader = DataLoader(test_set, batch_size = batch_size, shuffle = False)
 
     # Instantiating the model, optimizer, scheduler and criterion
-    model = ProteinTransformer(aminoacids, embd_dim, classes, n_heads, n_layers, max_relative_position, clf_hid_dim, dropout, device).to(device)
-    print("Number of model parameters: ", sum(p.numel() for p in model.parameters() if p.requires_grad))
+    model = ProteinTransformer(aminoacids, embd_dim, classes, n_heads, n_layers, max_relative_position, clf_hid_dim, dropout, device, seed = config['seed']).to(device)
+    n_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
+    print("Number of model parameters: ", n_params)
 
     optimizer = optim.Adam(model.parameters(), lr = learning_rate, weight_decay = weight_decay)
-    #scheduler = ExponentialLR(optimizer, gamma = gamma_scheduler)
+    # scheduler = ExponentialLR(optimizer, gamma = gamma_scheduler)
     scheduler = ReduceLROnPlateau(optimizer, 'min', factor = gamma_scheduler, patience = 1)
-    criterion = nn.CrossEntropyLoss(ignore_index = 8, label_smoothing = label_smoothing)
+
+    if loss_function == "focal":
+        criterion = FocalLoss(alpha = focalloss_alpha, gamma = focalloss_gamma, ignore_index = 8)
+    elif loss_function == "crossentropy":
+        criterion = nn.CrossEntropyLoss(ignore_index = 8, label_smoothing = label_smoothing)
 
     # Instantiating a Trainer object for training and evaluation
-    trainer = Trainer(model, device, epochs)
+    trainer = Trainer(model, device, gradient_clipping, epochs)
 
     if TEST_ONLY:
         # Testing a loaded model on the CB513 dataset
@@ -111,45 +144,50 @@ if __name__ == "__main__":
 
     else:
         # Training and validating model over multiple epochs
-        wandb.login()
-        with wandb.init(project = 'DL23_PSSP', config = config, name = folder):
+        if wandb_log:
+            wandb.login()
+            wandb.init(project = 'DL23_PSSP', config = config, name = folder)
             config = wandb.config
             wandb.watch(model, criterion, log = "all", log_freq = log_freq)
 
-            best_val_accuracy = 0
-            for epoch in range(epochs):
-                train_loss, train_accuracy = trainer.train(trainloader, criterion, optimizer, log_freq, epoch)
-                val_accuracy, val_loss, val_predictions, val_targets = trainer.evaluate(testloader, criterion, epoch)
-                examples_ct = trainer.examples_ct
+        best_val_accuracy = 0
+        for epoch in range(epochs):
+            train_loss, train_accuracy = trainer.train(trainloader, criterion, optimizer, log_freq, max_grad_norm, epoch, wandb_log)
+            val_accuracy, val_loss, val_predictions, val_targets = trainer.evaluate(testloader, criterion, epoch)
+            examples_ct = trainer.examples_ct
 
+            if wandb_log:
                 wandb.log({'train_loss': train_loss,
                         'train_accuracy': train_accuracy,
                         'validation_loss': val_loss,
                         'validation_accuracy': val_accuracy,
                         'epoch': epoch}, step = examples_ct)
 
-                print(f"End of Epoch {epoch+1}/{epochs}")
-                print(f"Train Loss: {train_loss:.4f}, Train Q8 Accuracy: {train_accuracy:.4f}")
-                print(f"Val Loss: {val_loss:.4f}, Val Q8 Accuracy: {val_accuracy:.4f}")
+            print(f"End of Epoch {epoch+1}/{epochs}")
+            print(f"Train Loss: {train_loss:.4f}, Train Q8 Accuracy: {train_accuracy:.4f}")
+            print(f"Val Loss: {val_loss:.4f}, Val Q8 Accuracy: {val_accuracy:.4f}")
 
-                if val_accuracy > best_val_accuracy:
-                    best_val_accuracy = val_accuracy
-                    save_checkpoint(epoch, model, optimizer, best_val_accuracy, directory, is_best=True)
-                    print("New best model saved!")
+            if val_accuracy > best_val_accuracy:
+                best_val_accuracy = val_accuracy
+                save_checkpoint(epoch, model, optimizer, best_val_accuracy, directory, is_best=True)
+                print("New best model saved!")
 
-                # Saving regular checkpoint
-                save_checkpoint(epoch, model, optimizer, best_val_accuracy, directory)
-                print(f"Checkpoint saved for epoch {epoch+1}")
+            # Saving regular checkpoint
+            save_checkpoint(epoch, model, optimizer, best_val_accuracy, directory)
+            print(f"Checkpoint saved for epoch {epoch+1}")
 
-                if scheduler:
-                    scheduler.step(val_loss)
+            if scheduler:
+                scheduler.step(val_loss)
 
-            print(f"Best Val Accuracy: {best_val_accuracy:.4f}")
+        print(f"Best Val Accuracy: {best_val_accuracy:.4f}")
 
-            # Testing the best model on the CB513 dataset for computing final metrics
-            print("Testing the best model on the CB513 dataset:")
-            os.makedirs(f'images/{directory}', exist_ok=True)
-            best_model, epoch = load_model(os.path.join(directory, 'bestmodel.pth'), model, device)
-            test_model(best_model, testloader, criterion, device, f'images/{directory}')
+        # Testing the best model on the CB513 dataset for computing final metrics
+        print("Testing the best model on the CB513 dataset:")
+        os.makedirs(f'images/{directory}', exist_ok=True)
+        best_model, epoch = load_model(os.path.join(directory, 'bestmodel.pth'), model, device)
+        test_model(best_model, testloader, criterion, device, f'images/{directory}')
 
+        if wandb_log:
+            wandb.log({'num model parameters': n_params})
             wandb.unwatch(model)
+            wandb.finish()
