@@ -111,6 +111,16 @@ The current trend is towards hybrid models that combine different architectures.
 
 ## 3 - Method
 
+Transformer
+- Attention
+- Embedding dei residui
+- Positional Encoding Relativo
+- Attention Mask
+
+---
+
+## 4 - Experimental setup
+
 ### Raw data
 The datasets utilized in this project were generated using the PISCES protein culling server, a tool designed to extract protein sequences from the Protein Data Bank (PDB).
 
@@ -120,10 +130,11 @@ Moreover, while unfiltered datasets come pre-divided into train/test/validation 
 
 The CullPDB-6133-filtered dataset that I will use for training comprises 6128 protein sequences, each containing a maximum of 700 amino acids. Every element in these sequences is associated with 57 features, distributed as follows:
 
-- Features [0,22): One-hot encoded amino acid residues, followed by a 'NoSeq' marker indicating the end of the protein sequence.
-- Features [22,31): One-hot Secondary Structure labels **[L, B, E, G, I, H, S, T]**, also followed by a 'NoSeq' marker.
-- Features [31,35): N and C terminals, followed by relative and absolute solvent accessibility measures.
-- Features [35,57): Position-Specific Scoring Matrix (PSSM) values, representing the protein sequence profile.
+- Features [0,22): One-hot encoded amino acid residues, with the order of 'A', 'C', 'E', 'D', 'G', 'F', 'I', 'H', 'K', 'M', 'L', 'N', 'Q', 'P', 'S', 'R', 'T', 'W', 'V', 'Y', 'X','NoSeq'. The 'NoSeq' marker indicates the end of the protein sequence.
+- Features [22,31): One-hot Secondary Structure labels, with the order of 'L', 'B', 'E', 'G', 'I', 'H', 'S', 'T','NoSeq'.
+- Features [31,33): N- and C- terminals.
+- Features [33,35): Relative and absolute solvent accessibility measures.
+- Features [35,57): Position-Specific Scoring Matrix (PSSM) values, representing the protein sequence profile, with the order of 'A', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'V', 'W', 'X', 'Y','NoSeq'.
 
 For per-epoch validation and final testing, we employ the CB513 dataset. This dataset contains 513 protein sequences specifically designed for testing when filtered CullPDB datasets are used for training. Importantly, CB513 maintains the same features as CullPDB, ensuring consistency in the data structure across training and testing phases.
 
@@ -142,17 +153,24 @@ This processing left me with a final dataset configuration consisting of:
 - 42 features describing the primary structure: 21 amino acid residues + 21 PSSMs.
 - 9 one-hot targets: 8 secondary structures + the NoSeq class, which is crucial for generating the padding mask.
 
----
+### ALTRO
 
-## 4 - Experimental setup
+- Riproducibilità
+- Ottimizzatore, Loss, Scheduler, Iperparametri
+- Parametri di training, epoche, batch size, device
+- Indice degli script su github con requirements
 
 ---
 
 ## 5 - Results
 
+Risultati solo del modello migliore, ovvero quello con embeddings, rel pos encoding, gradient clipping, ce loss, weight init
+
 ---
 
 ## 6 - Ablation studies
+
+Tutte le modifiche che ho fatto
 
 ---
 
