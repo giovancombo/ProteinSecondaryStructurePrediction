@@ -133,7 +133,7 @@ if __name__ == "__main__":
                 print(f"Val Loss: {val_loss:.4f}, Val Q8 Accuracy: {val_accuracy:.4f}")
 
                 if val_accuracy > best_val_accuracy:
-                    best_test_accuracy = val_accuracy
+                    best_val_accuracy = val_accuracy
                     save_checkpoint(epoch, model, optimizer, best_val_accuracy, directory, is_best=True)
                     print("New best model saved!")
 
