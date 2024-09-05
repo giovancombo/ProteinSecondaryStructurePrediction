@@ -3,29 +3,38 @@
 # Dedicated Repository on GitHub at https://github.com/giovancombo/ProteinSecondaryStructurePrediction
 
 
+# Reproducibility
+seed: 1492
+
+# Model settings
+embd_dim: 128                       # Embedding dimensions for each aminoacid token
+n_heads: 8                          # Number of Self-Attention heads
+n_layers: 4                         # Number of EncoderLayers of the Transformer
+clf_hid_dim: 128                    # Hidden dimension of the Classification Head
+
+# Training settings
+batch_size: 8
+epochs: 15
+gamma_scheduler: 0.1
+learning_rate: 0.001
+weight_decay: 0.0001
+dropout: 0.
+
+loss_function: "crossentropy"       # {"crossentropy", "focal"}
+focalloss_alpha: 0.3
+focalloss_gamma: 2.5
+label_smoothing: 0.
+gradient_clipping: True
+max_grad_norm: 1.0                  # Gradient clipping
+max_relative_position: 80           # Window size for the Relative Positional Encoding
+
+# Logging settings
+wandb_log: True                     # Whether to log on Weights & Biases
+log_freq: 10
+
+# Training/Inference settings
 TEST_ONLY: False
 LOADED_PATH: "checkpoints/embd64_bs2_lr0.001_8heads_8layers_dr0.0_wd0.0001_ls0.0_gamma0.13265/bestmodel.pth"
 
 TRAIN_PATH: "data/cullpdb+profile_6133_FINAL.npy"
 TEST_PATH: "data/cb513+profile_split1_FINAL.npy"
-
-seed: 1492
-
-# Model settings
-embd_dim: 64                      # Embedding dimensions for each aminoacid token
-n_heads: 8                        # Number of Self-Attention heads
-n_layers: 8                       # Number of Blocks of the Transformer
-clf_hid_dim: 256                  # Hidden dimension of the Classification Head
-
-# Training settings
-batch_size: 2
-epochs: 20
-learning_rate: 0.001
-weight_decay: 0.0001
-label_smoothing: 0.
-dropout: 0.
-gamma_scheduler: 0.1
-max_relative_position: 80        # Maximum relative distance bw aminoacids in sequence (for Relative Positional Encoding)
-
-# Logging settings
-log_freq: 10
