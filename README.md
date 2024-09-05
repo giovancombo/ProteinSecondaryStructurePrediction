@@ -111,6 +111,37 @@ The current trend is towards hybrid models that combine different architectures.
 
 ## 3 - Method
 
+### Raw data
+The datasets utilized in this project were generated using the PISCES protein culling server, a tool designed to extract protein sequences from the Protein Data Bank (PDB).
+
+Multiple versions of the CullPDB datasets are available, varying in size. For this project, I selected the "cullpdb+profile_6133-filtered" dataset, in ordet to have access to more training data. It's worth noting that *filtered* versions of the CullPDB datasets are particularly suitable for use in conjunction with the CB513 test dataset, as it eliminates all redundant data.
+
+Moreover, while unfiltered datasets come pre-divided into train/test/validation splits, the filtered version allows for more flexibility, as **all proteins in the filtered dataset can be used for training**, with no need to split into training and validation sets, and with testing conducted on the separate CB513 dataset.
+
+The CullPDB-6133-filtered dataset that I will use for training comprises 6128 protein sequences, each containing a maximum of 700 amino acids. Every element in these sequences is associated with 57 features, distributed as follows:
+
+- Features [0,22): One-hot encoded amino acid residues, followed by a 'NoSeq' marker indicating the end of the protein sequence.
+- Features [22,31): One-hot Secondary Structure labels **[L, B, E, G, I, H, S, T]**, also followed by a 'NoSeq' marker.
+- Features [31,35): N and C terminals, followed by relative and absolute solvent accessibility measures.
+- Features [35,57): Position-Specific Scoring Matrix (PSSM) values, representing the protein sequence profile.
+
+For per-epoch validation and final testing, we employ the CB513 dataset. This dataset contains 513 protein sequences specifically designed for testing when filtered CullPDB datasets are used for training. Importantly, CB513 maintains the same features as CullPDB, ensuring consistency in the data structure across training and testing phases.
+
+All the datasets are officially available at [this Princeton link](https://www.princeton.edu/~jzthree/datasets/ICML2014/). Yet, I encountered access issues with this source.
+
+### Data pre-processing
+When downloaded, the raw *CullPDB-6133-filtered* dataset is structured as a (5534, 3990) *numpy* matrix, necessitating a reshaping process to extract individual protein sequences.
+
+To clarify the actual data structure, I reshaped the dataset into a (5534, 700, 57) *numpy* tensor.
+
+Some proteins in the dataset contain an unknown 'X' amino acid, that represents particular or very rare amino acids. To mitigate potential issues, I made the decision to remove all proteins containing at least one 'X' element. This refinement process resulted in the creation of the **cullpdb+profile_6133_FINAL.npy** dataset, a (3880, 700, 57) *numpy* tensor, which I promptly converted to a PyTorch tensor for my experiments.
+
+I also performed feature processing on this dataset. First, I separated the 9 secondary structure targets from the other features. Then, I removed the features related to N and C terminals and solvent accessibility, as they were not relevant to the scope of my project. Additionally, I eliminated the two features associated with the previously removed 'X' amino acid.
+
+This processing left me with a final dataset configuration consisting of:
+- 42 features describing the primary structure: 21 amino acid residues + 21 PSSMs.
+- 9 one-hot targets: 8 secondary structures + the NoSeq class, which is crucial for generating the padding mask.
+
 ---
 
 ## 4 - Experimental setup
