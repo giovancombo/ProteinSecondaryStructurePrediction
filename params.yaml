@@ -9,6 +9,8 @@ LOADED_PATH: "checkpoints/embd64_bs2_lr0.001_8heads_8layers_dr0.0_wd0.0001_ls0.0
 TRAIN_PATH: "data/cullpdb+profile_6133_FINAL.npy"
 TEST_PATH: "data/cb513+profile_split1_FINAL.npy"
 
+seed: 1492
+
 # Model settings
 embd_dim: 64                      # Embedding dimensions for each aminoacid token
 n_heads: 8                        # Number of Self-Attention heads
