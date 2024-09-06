@@ -214,6 +214,41 @@ def save_metrics_plots(y_true, y_pred, class_names, save_dir):
         plt.savefig(os.path.join(save_dir, f'{metric.lower()}_per_class.png'))
         plt.close()
 
+    
+def count_amino_acids(data):
+    """
+    Count the occurrences of each amino acid in the given data tensor.
+
+    Args:
+        data (Tensor): Data tensor to count amino acids in.
+
+    Returns:
+        ndarray: Array of amino acid counts.
+    """
+
+    amino_acid_counts = torch.sum(data[:, :, :20], dim=(0, 1)).cpu().numpy()
+    return amino_acid_counts
+
+
+def filter_protein_dataset(data, min_length = 50, max_length = 600):
+    """
+    Filter out proteins with length less than min_length or greater than max_length.
+
+    Args:
+        data (Tensor): Protein dataset tensor.
+        min_length (int, optional): Minimum protein length.
+        max_length (int, optional): Maximum protein length.
+
+    Returns:
+        Tensor: Filtered protein dataset
+    """
+
+    protein_lengths = torch.sum(data[:, :, :20].sum(axis = 2) != 0, axis = 1)
+    mask = (protein_lengths >= min_length) & (protein_lengths <= max_length)
+    filtered_data = data[mask]
+    
+    return filtered_data
+
 
 def load_raw_data(path, seq_len, features):
     """
