@@ -9,7 +9,7 @@ import torch.nn.functional as F
 
 class FocalLoss(nn.Module):
     def __init__(self, alpha = 1, gamma = 2, reduction = 'mean', ignore_index = -100):
-        super(FocalLoss, self).__init__()
+        super().__init__()
         self.alpha = alpha
         self.gamma = gamma
         self.reduction = reduction
@@ -26,3 +26,18 @@ class FocalLoss(nn.Module):
             return focal_loss[targets != self.ignore_index].sum()
         else:
             return focal_loss
+
+
+class CombinedLoss(nn.Module):
+    def __init__(self, alpha = 1, gamma = 2, ce_weight = 0.5, focal_weight = 0.5, reduction = 'mean', ignore_index = -100):
+        super().__init__()
+
+        self.focal_loss = FocalLoss(alpha, gamma, reduction, ignore_index)
+        self.ce_loss = nn.CrossEntropyLoss(reduction = reduction, ignore_index = ignore_index)
+        self.ce_weight = ce_weight
+        self.focal_weight = focal_weight
+
+    def forward(self, inputs, targets):
+        focal = self.focal_loss(inputs, targets)
+        ce = self.ce_loss(inputs, targets)
+        return self.ce_weight * ce + self.focal_weight * focal
