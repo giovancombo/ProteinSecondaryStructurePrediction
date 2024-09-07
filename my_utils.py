@@ -108,28 +108,27 @@ def save_checkpoint(epoch, model, optimizer, best_accuracy, directory, is_best =
     torch.save(checkpoint, os.path.join(directory, f'checkpoint_ep{epoch + 1}.pth'))
 
 
-def load_model(model_path, loaded_model, device):
+def load_pretrained_model(model_path, model, optimizer = None):
     """
-    Loads model stats from a given path and returns it for further training or testing.
+    Load a pretrained model from a given path and return it for further training or testing.
 
     Args:
         model_path (str): Path to the model checkpoint.
-        loaded_model (nn.Module): Model to load the state_dict into.
-        device (torch.device): Device to load the model on.
+        model (nn.Module): Model to load the state_dict into.
+        optimizer (Optimizer, optional): Optimizer to load the state_dict into.
 
     Returns:
-        tuple: Loaded model and epoch of training.
+        tuple: Loaded model, optimizer, epoch of training and best accuracy.
     """
 
-    checkpoint = torch.load(model_path, map_location = device)
-    if isinstance(checkpoint, dict) and 'model_state_dict' in checkpoint:
-        loaded_model.load_state_dict(checkpoint['model_state_dict'])
-    else:
-        loaded_model.load_state_dict(checkpoint)
+    checkpoint = torch.load(model_path)
+    model.load_state_dict(checkpoint['model_state_dict'])
+    if optimizer is not None:
+        optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
     epoch = checkpoint['epoch']
-    loaded_model.eval()
+    best_accuracy = checkpoint['best_accuracy']
 
-    return loaded_model, epoch
+    return model, optimizer, epoch, best_accuracy
 
 
 def analyze_pssm(pssm_tensor):
