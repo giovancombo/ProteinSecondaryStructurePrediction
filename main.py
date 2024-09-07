@@ -16,7 +16,7 @@ import random
 
 from trainer import Trainer
 from model import ProteinTransformer
-from losses import FocalLoss
+from losses import FocalLoss, CombinedLoss
 from my_utils import *
 
 
@@ -46,6 +46,10 @@ LOADED_PATH = config['LOADED_PATH']
 TRAIN_PATH = config['TRAIN_PATH']
 TEST_PATH = config['TEST_PATH']
 
+filter_proteins_by_length = config['filter_proteins_by_length']
+min_len = config['min_len']
+max_len = config['max_len']
+
 set_seed(config['seed'])
 
 aminoacids = 21
@@ -69,6 +73,8 @@ loss_function = config['loss_function']
 label_smoothing = config['label_smoothing']
 focalloss_alpha = config['focalloss_alpha']
 focalloss_gamma = config['focalloss_gamma']
+ce_weight = config['ce_weight']
+focal_weight = config['focal_weight']
 gradient_clipping = config['gradient_clipping']
 max_grad_norm = config['max_grad_norm']
 max_relative_position = config['max_relative_position']
@@ -88,6 +94,15 @@ if __name__ == "__main__":
     # Loading the raw data and converting it to PyTorch tensors
     cullpdb_data = torch.from_numpy(np.load(TRAIN_PATH))            # (3880, 700, 51)
     cb513_data = torch.from_numpy(np.load(TEST_PATH))               # (513, 700, 51)
+
+    if filter_proteins_by_length:
+        filtered_cullpdb_data = filter_protein_dataset(cullpdb_data, min_len, max_len)
+
+        print(f"Dimensioni originali cullpdb_data: {cullpdb_data.shape}")
+        print(f"Dimensioni filtrate cullpdb_data: {filtered_cullpdb_data.shape}")
+        print(f"Dimensioni originali cb513_data: {cb513_data.shape}")
+
+        cullpdb_data = filtered_cullpdb_data
 
     # One-hot and integer aminoacid residues
     train_residues_1h = cullpdb_data[:,:,:21].type(torch.float)     # (3880, 700, 21)
@@ -132,13 +147,15 @@ if __name__ == "__main__":
         criterion = FocalLoss(alpha = focalloss_alpha, gamma = focalloss_gamma, ignore_index = 8)
     elif loss_function == "crossentropy":
         criterion = nn.CrossEntropyLoss(ignore_index = 8, label_smoothing = label_smoothing)
+    elif loss_function == "combined":
+        criterion = CombinedLoss(alpha = focalloss_alpha, gamma = focalloss_gamma, ce_weight = ce_weight, focal_weight = focal_weight, ignore_index = 8)
 
     # Instantiating a Trainer object for training and evaluation
     trainer = Trainer(model, device, gradient_clipping, epochs)
 
     if TEST_ONLY:
         # Testing a loaded model on the CB513 dataset
-        loaded_model, epoch = load_model(LOADED_PATH, model, device)
+        loaded_model, _, epoch, _ = load_pretrained_model(LOADED_PATH, model, device)
         print(f"\nTesting loaded model from epoch {epoch} on the CB513 dataset:")
         test_model(loaded_model, testloader, criterion, device, f'images/{directory}')
 
@@ -184,7 +201,7 @@ if __name__ == "__main__":
         # Testing the best model on the CB513 dataset for computing final metrics
         print("Testing the best model on the CB513 dataset:")
         os.makedirs(f'images/{directory}', exist_ok=True)
-        best_model, epoch = load_model(os.path.join(directory, 'bestmodel.pth'), model, device)
+        best_model, _, epoch, _ = load_pretrained_model(os.path.join(directory, 'bestmodel.pth'), model)
         test_model(best_model, testloader, criterion, device, f'images/{directory}')
 
         if wandb_log:
