@@ -12,6 +12,10 @@ n_heads: 8                          # Number of Self-Attention heads
 n_layers: 4                         # Number of EncoderLayers of the Transformer
 clf_hid_dim: 128                    # Hidden dimension of the Classification Head
 
+filter_proteins_by_length: False    # Whether to remove proteins less than min_len or greater than max_len aminoacids - It only affects the training set
+min_len: 50                         # Minimum length of the protein
+max_len: 680                        # Maximum length of the protein
+
 # Training settings
 batch_size: 8
 epochs: 15
@@ -20,9 +24,11 @@ learning_rate: 0.001
 weight_decay: 0.0001
 dropout: 0.
 
-loss_function: "crossentropy"       # {"crossentropy", "focal"}
-focalloss_alpha: 0.3
-focalloss_gamma: 2.5
+loss_function: "crossentropy"       # {"crossentropy", "focal", "combined"}
+focalloss_alpha: 0.5
+focalloss_gamma: 3.
+ce_weight: 0.30                     # Weight for CrossEntropy loss importance in the Combined loss
+focal_weight: 0.70                  # Weight for Focal loss importance in the Combined loss
 label_smoothing: 0.
 gradient_clipping: True
 max_grad_norm: 1.0                  # Gradient clipping
