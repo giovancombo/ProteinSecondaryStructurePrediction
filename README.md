@@ -7,9 +7,9 @@ The field of protein secondary structure prediction has evolved significantly ov
 ## 1 - Introduction
 
 This work focuses on replicating part of the results achieved in the following paper:
-> [(1) Zhou, J., & Troyanskaya, O. G., Deep Supervised and Convolutional Generative Stochastic Network for Protein Secondary Structure Prediction, 2014](https://arxiv.org/abs/1403.1347)
+> [Zhou, J., & Troyanskaya, O. G., Deep Supervised and Convolutional Generative Stochastic Network for Protein Secondary Structure Prediction, 2014](https://arxiv.org/abs/1403.1347)
 
-Instead of using a ConvNet, though, a Transformer will be implemented, following the architecture presented in the original paper, [*Attention Is All You Need* (2)](https://arxiv.org/abs/1706.03762).
+Instead of using a ConvNet, though, a Transformer will be implemented, following the architecture presented in the original paper, [*Attention Is All You Need*](https://arxiv.org/abs/1706.03762).
 
 The Primary Structure of a protein can be seen as a sequence of **characters** (instead of words) drawn from a **vocabulary of size 20**. "Translating" from the Primary to the Secondary Structure means converting the input sequence to another sequence of **characters** drawn from a **vocabulary of size 8** (i.e. the 8 possible classes of Secondary Structure), or **size 3**.
 The size of the vocabulary only depends on the level of prediction accuracy we want to achieve, as the size-3-vocabulary merges the 8 classes into 3 macroclasses. Thus, prediction on the 3-classes problem is easier.
@@ -70,10 +70,7 @@ It's curious to note that specific amino acids are more prone to be found in spe
 + G, P are known as *helix breakers*
 
 ### Data interpretation
-*Position-Specific Scoring Matrix* (PSSM) values can be interpreted as **word vectors** for the input characters. As these values are not obvious to calculate, I will use *CullPDB* and *CB513* datasets, provided by the authors of the [(1)](https://arxiv.org/abs/1403.1347) paper (available at [this link](https://www.princeton.edu/~jzthree/datasets/ICML2014)), which contain a bunch of ready-to-use PSSMs.
-
-This dataset was originally hosted at This link. Since the original URL is no longer available and the dataset is still used by many, the dataset has been moved [here](https://zenodo.org/records/7764556#.ZByi1ezMJvI) or mirrored [here](https://mega.nz/folder/xct0XSpA#SKz72JtnSAaX61QLMC_JNg).
-I actually downloaded the datasets from chinese Baidu AI Studio platform (https://aistudio.baidu.com/datasetdetail/79771) because of the Princeton link not working.
+*Position-Specific Scoring Matrix* (PSSM) values can be interpreted as **word vectors** for the input characters. As these values are not obvious to calculate, I will use *CullPDB* and *CB513* datasets, available at [this link](https://www.princeton.edu/~jzthree/datasets/ICML2014), which contain a bunch of ready-to-use PSSMs.
 
 Proteins that show extra characters not included in the Primary Structure Vocabulary (e.g. 'X', indicating an unknown amino acid) are removed from the datasets.
 
@@ -103,6 +100,8 @@ The deep learning era brought further advancements. Zhou and Troyanskaya's 2014 
 
 Convolutional Neural Networks also found success, especially in capturing local structural motifs. Wang et al.'s DeepCNF (2016) combined CNNs with Conditional Random Fields, achieving state-of-the-art performance by modeling both local and global sequence-structure relationships.
 
+More recent architectures specialized in Secondary Structure Prediction are MUFOLD-SS (2018), DeepACLSTM (2019), Contextnet (2019) and MCNN-PSSP (2022), which outperformed previous approaches with testing accuracies around 70-71% on the CB513 dataset.
+
 Recent years have seen the emergence of attention mechanisms and transformer architectures. While primarily developed for natural language processing, these models have shown promise in understanding complex protein structures, as demonstrated by AlphaFold (Jumper et al., 2021) in tertiary structure prediction.
 
 The current trend is towards hybrid models that combine different architectures. OPUS-TASS (Xu et al., 2020) integrates CNNs, bidirectional LSTMs, and transformer layers, achieving high accuracy in both 3-state and 8-state predictions.
@@ -124,15 +123,25 @@ The current trend is towards hybrid models that combine different architectures.
 | 2022 | MCNN-PSSP [(13)](https://www.frontiersin.org/journals/bioengineering-and-biotechnology/articles/10.3389/fbioe.2022.901018/full) | 74.2 | 70.6 |
 | 2024 | **DL23-PSSP** | - | **69.2** |
 
+This table presents an overview of major contributions to the field of Protein Secondary Structure Prediction (PSSP) over the past decade. Results achieved by these works reveal an apparent performance ceiling that has been challenging to surpass. Specifically, the Q8 accuracy on the CB513 dataset seems to plateau around 70-71%, while performance on the CullPDB dataset reaches up to about 75%.
+
+A particular configuration of my model, **DL23-PSSP**, which I will present in the next section, achieves a Q8 accuracy of 69.2% on CB513, resulting competitive among other recent approaches. In my evaluation, I tried to maintain methodological consistency with previous studies, particularly in using the entire CullPDB dataset for training and the entire CB513 for validation and testing. This approach ensures a fair comparison within the established benchmarking framework of the field.
+
 ---
 
 ## 3 - Method
 
-Transformer
-- Attention
-- Embedding dei residui
-- Positional Encoding Relativo
-- Attention Mask
+The Protein Secondary Structure Prediction model employed in this study is an adaptation of the **Transformer** architecture, drawing inspiration from the [work of *Vaswani et al. (2017)*](https://arxiv.org/abs/1706.03762). This modified Transformer is specifically tailored to address the unique challenges of protein sequence analysis while exploiting the architecture's ability to capture long-range dependencies between elements.
+
+The model utilizes an *Encoder-only* structure. This design choice is motivated by the nature of Secondary Structure Prediction, which doesn't require the generation of new sequences but rather the **classification** of existing ones. Thus, the model substitutes the Decoder with a straightforward *Multi-Layer Perceptron*. This MLP serves as the classification layer, performing element-wise categorization to assign each amino acid to one of **eight** secondary structure classes.
+
+The model's input layer is designed to process sequences of 21 amino acid residues, including a special 'NoSeq' token that indicates the end of a protein sequence. An *Embedding* layer transforms these one-hot amino acid residues inputs into dense vector representations, with the 'NoSeq' token strategically set as the *padding_index* to prevent learning on these placeholder elements.
+
+A key innovation in this model is the implementation of **Relative Positional Encoding** within the attention mechanism. This approach is crucial for capturing local semantic relationships and patterns within the protein sequence that simple Absolute Positional Encoding techniques might fail to address. The model gains the ability to consider the spatial relationships between amino acids at different scales, a critical factor in understanding protein structure.
+
+The Encoder stack consists of four identical layers, each incorporating a multi-head attention block with eight attention heads, followed by a position-wise Feed-Forward network. This structure allows the model to process the protein sequence at multiple levels of abstraction.
+
+Adhering to the original Transformer design, the model employs *post-LayerNormalization*, applying normalization to the outputs of both the Attention and Feed-Forward blocks in every Encoder layer. Additionally, Dropout is integrated throughout the network as a regularization technique, enhancing the model's ability to generalize.
 
 ---
 
@@ -155,7 +164,7 @@ The CullPDB-6133-filtered dataset that I will use for training comprises 6128 pr
 
 For per-epoch validation and final testing, we employ the CB513 dataset. This dataset contains 513 protein sequences specifically designed for testing when filtered CullPDB datasets are used for training. Importantly, CB513 maintains the same features as CullPDB, ensuring consistency in the data structure across training and testing phases.
 
-All the datasets are officially available at [this Princeton link](https://www.princeton.edu/~jzthree/datasets/ICML2014/). Yet, I encountered access issues with this source.
+All the datasets are officially available at [this Princeton link](https://www.princeton.edu/~jzthree/datasets/ICML2014/). Since the original URL is no longer available and the dataset is still used by many, the dataset has been moved [here](https://zenodo.org/records/7764556#.ZByi1ezMJvI) and mirrored [here](https://mega.nz/folder/xct0XSpA#SKz72JtnSAaX61QLMC_JNg).
 
 ### Data pre-processing
 When downloaded, the raw *CullPDB-6133-filtered* dataset is structured as a (5534, 3990) *numpy* matrix, necessitating a reshaping process to extract individual protein sequences.
@@ -170,24 +179,36 @@ This processing left me with a final dataset configuration consisting of:
 - 42 features describing the primary structure: 21 amino acid residues + 21 PSSMs.
 - 9 one-hot targets: 8 secondary structures + the NoSeq class, which is crucial for generating the padding mask.
 
-### ALTRO
+### More
 
-- Riproducibilità
-- Ottimizzatore, Loss, Scheduler, Iperparametri
-- Parametri di training, epoche, batch size, device
-- Indice degli script su github con requirements
+- Riproducibility
+- Optimizer, Loss, Scheduler, HPs
+- Epochs, batch size, device
+- Index of github scripts w requirements
 
 ---
 
 ## 5 - Results
 
-Risultati solo del modello migliore, ovvero quello con embeddings, rel pos encoding, gradient clipping, ce loss, weight init
-
 ---
 
 ## 6 - Ablation studies
 
-Tutte le modifiche che ho fatto
+- Adam vs SGD
+- One-Hot residues vs Embedded
+- Residues + PSSM vs only PSSM
+- Absolute vs Relative Pos Encoding
+- Pre- vs Post-LayerNorm
+- All proteins vs truncated vs removed
+- Weight initialization
+- Label Smoothing
+- CELoss vs FocalLoss vs CombinedLoss
+- Gradient clipping
+- Softmax Temperature
+- Weight Decay
+- Dropout
+- Max Relative Position
+- Pretraining on filtered data + Finetuning on all data
 
 ---
 
