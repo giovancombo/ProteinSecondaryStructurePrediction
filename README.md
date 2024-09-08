@@ -119,8 +119,9 @@ The current trend is towards hybrid models that combine different architectures.
 | 2018 | MUFOLD-SS [(8)](https://arxiv.org/abs/1709.06165) | - | 73.4 |
 | 2018 | CRRNN [(9)](https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-018-2280-5) | - | 71.4 |
 | 2019 | Contextnet [(10)](https://pubs.rsc.org/en/content/articlelanding/2019/ra/c9ra05218f) | - | 71.9 |
-| 2020 | F1DCNN-SS [(11)](https://www.eurekaselect.com/article/103754) | 74.1 | 70.5 |
-| 2022 | MCNN-PSSP [(12)](https://www.frontiersin.org/journals/bioengineering-and-biotechnology/articles/10.3389/fbioe.2022.901018/full) | 74.2 | 70.6 |
+| 2019 | DeepACLSTM [(11)](https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-019-2940-0) | - | 70.5 |
+| 2020 | F1DCNN-SS [(12)](https://www.eurekaselect.com/article/103754) | 74.1 | 70.5 |
+| 2022 | MCNN-PSSP [(13)](https://www.frontiersin.org/journals/bioengineering-and-biotechnology/articles/10.3389/fbioe.2022.901018/full) | 74.2 | 70.6 |
 | 2024 | **DL23-PSSP** | - | **69.2** |
 
 ---
