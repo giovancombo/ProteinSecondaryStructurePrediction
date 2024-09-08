@@ -14,7 +14,7 @@ Instead of using a ConvNet, though, a Transformer will be implemented, following
 The Primary Structure of a protein can be seen as a sequence of **characters** (instead of words) drawn from a **vocabulary of size 20**. "Translating" from the Primary to the Secondary Structure means converting the input sequence to another sequence of **characters** drawn from a **vocabulary of size 8** (i.e. the 8 possible classes of Secondary Structure), or **size 3**.
 The size of the vocabulary only depends on the level of prediction accuracy we want to achieve, as the size-3-vocabulary merges the 8 classes into 3 macroclasses. Thus, prediction on the 3-classes problem is easier.
 
-### Biological context
+### Biology
 
 Proteins are **chains of proteinogenic amino acids**.
 
@@ -106,6 +106,22 @@ Convolutional Neural Networks also found success, especially in capturing local 
 Recent years have seen the emergence of attention mechanisms and transformer architectures. While primarily developed for natural language processing, these models have shown promise in understanding complex protein structures, as demonstrated by AlphaFold (Jumper et al., 2021) in tertiary structure prediction.
 
 The current trend is towards hybrid models that combine different architectures. OPUS-TASS (Xu et al., 2020) integrates CNNs, bidirectional LSTMs, and transformer layers, achieving high accuracy in both 3-state and 8-state predictions.
+
+| Year     | Method  | Q8 Accuracy on CullPDB (%) | Q8 Accuracy on CB513 (%) |
+| :----: | :----: | :----: | :----: |
+| 2011 | RaptorX-SS [(1)](http://raptorx6.uchicago.edu/StructurePropertyPred/predict/) | 69.7 | 64.9 |
+| 2014 | **SC-GSN** [(2)](https://arxiv.org/abs/1403.1347) | 72.1 | 66.4 |
+| 2016 | DeepCNF [(3)](https://arxiv.org/abs/1512.00843) | 75.2 | 68.3 |
+| 2016 | DCRNN [(4)](https://arxiv.org/abs/1604.07176) | - | 70.4 |
+| 2016 | MUST-CNN [(5)](https://arxiv.org/pdf/1605.03004) | - | 68.4 |
+| 2016 | SSREDN [(6)](https://www.sciencedirect.com/science/article/abs/pii/S0950705116304713) | 73.1 | 68.2 |
+| 2018 | CNNH_PSS [(7)](https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-018-2067-8) | 74.0 | 70.3 |
+| 2018 | MUFOLD-SS [(8)](https://arxiv.org/abs/1709.06165) | - | 73.4 |
+| 2018 | CRRNN [(9)](https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-018-2280-5) | - | 71.4 |
+| 2019 | Contextnet [(10)](https://pubs.rsc.org/en/content/articlelanding/2019/ra/c9ra05218f) | - | 71.9 |
+| 2020 | F1DCNN-SS [(11)](https://www.eurekaselect.com/article/103754) | 74.1 | 70.5 |
+| 2022 | MCNN-PSSP [(12)](https://www.frontiersin.org/journals/bioengineering-and-biotechnology/articles/10.3389/fbioe.2022.901018/full) | 74.2 | 70.6 |
+| 2024 | **DL23-PSSP** | - | **69.2** |
 
 ---
 
