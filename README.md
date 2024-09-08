@@ -194,41 +194,68 @@ This processing left me with a final dataset configuration consisting of:
 
 ## 6 - Ablation studies
 
-### One-Hot residues vs Embedded
-
-<p float="left", align="center">
-  <img src="https://github.com/giovancombo/ProteinSecondaryStructurePrediction/blob/main/images/results/plots/embedding_vs_onehot.png" width="60%" />
-</p>
-
 ### Residues + PSSM vs only PSSM
+
+The first aspect I had to consider was the sizing of the dataset, integrating the necessary features in the best format for the Protein Prediction task. Aware of the Transformer architecture, understanding the advantages of using embeddings, and recognizing that PSSMs can be viewed as embedding vectors related to the position in the protein, I initially thought that PSSP could be conducted using only PSSMs.
 
 <p float="left", align="center">
   <img src="https://github.com/giovancombo/ProteinSecondaryStructurePrediction/blob/main/images/results/plots/pssm_only.png" width="60%" />
 </p>
 
+The model's performance using only the sequence profile is promising, revealing that the the model is able to understand many structural semantic characteristics of proteins are well represented within the PSSMs. However, when I tried to include the raw one-hot sequence of residues, I noticed a further improvement. This indicates that, although much less informative than PSSMs, residues can provide useful information for better generalization of the problem and capture relationships between amino acids.
+
+### One-Hot vs Embedded Residues
+
+The *CullPDB* and *CB513* datasets present amino acid sequences as one-hot encoded vectors, utilizing a sparse representation. I decided to incorporate residue features alongside PSSMs in the dataset, resulting in a total of 42 features. Aware of the fact that dense representations generally yield superior results compared to sparse representations, I opted to modify the structure of my Transformer model.
+
+The revised model accepts PSSMs and raw residues as input, with the latter converted from one-hot to integer format. As an initial operation, I implemented an Embedding layer for amino acid residues, projecting them into a dense, higher-dimensional space compared to the original 21-dimensional one-hot encoding. Given that the 21 amino acids include the fictitious 'NoSeq' token, which solely indicates the protein sequence termination, I designated this amino acid as the *padding_index*. This ensures its initialization as a null vector, preventing parameter updates during the learning process.
+
+Embedding dimensions are typically powers of 2. Then, I defined the residue-specific embedding dimension as $embd_{dim} = d_{model} - 21$, where $d_{model}$ represents the total embedding dimension entering the Transformer, and $21$ corresponds to the number of PSSM features (which are inherently relative embedding vectors). These PSSM vectors are concatenated with the $d_{model} - 21$ embedding vectors generated from the residues, creating the tensor that is given in input to the Transformer Encoder. This approach maintains consistency with other Transformer parameters I will tune later, such as the number of attention heads or the head size.
+
+<p float="left", align="center">
+  <img src="https://github.com/giovancombo/ProteinSecondaryStructurePrediction/blob/main/images/results/plots/embedding_vs_onehot.png" width="60%" />
+</p>
+
+The performance analysis, as illustrated in the graph, reveals that the use of one-hot vectors (which are basically a very particular set of 42-dimensional embeddings) can achieve comparable performance to other embeddings (32), only being outperformed by embedding configurations with dimensions exceeding the total dimension of the one-hot version (96, 128, 192, 256). The relatively modest difference in performance can be attributed to the limited vocabulary size (21 elements) and the potentially dominant effect of PSSMs, which may overshadow the impact of the residues themselves.
+
+This observed phenomenon underscores the robustness of the Transformer architecture in extracting relevant information from various input representations, while also highlighting the significant contribution of PSSM features in the protein secondary structure prediction task.
+
 ### Absolute vs Relative Pos Encoding
+
+**Relative Positional Encoding** proves to be vital in executing this task. Proteins exhibit highly variable lengths, and secondary structure is predominantly dependent on local relationships rather than the absolute position of an amino acid within the protein. *Absolute Positional Encoding*, which is usually employed in common tasks with Transformers and other Attention models, here does not scale well with sequences of variable length, where examination of local relationships is crucial. Relative Positional Encoding is more suitable because it is invariant to protein length.
 
 <p float="left", align="center">
   <img src="https://github.com/giovancombo/ProteinSecondaryStructurePrediction/blob/main/images/results/plots/rel_abs%20%2B%20focal_ce_combined.png" width="49%" />
   <img src="https://github.com/giovancombo/ProteinSecondaryStructurePrediction/blob/main/images/results/plots/max_rel_position.png" width="49%" />
 </p>
 
+Adopting Relative Positional Encoding, I introduce a hyperparameter, **max_rel_position**, which determines the radius of the window within which local relationships are considered for each element $x$, fixed to the interval $[x - max_rel_position : x + max_rel_position]$. The optimal window size is found to be 80, but it is evident that proteins in the dataset can generally be classified well using short-range relationships, as performance remains comparable even with a window radius of 10. Conversely, an excessively small window significantly degrades performance. This suggests that long-range relationships are either few in number or are not the primary contributors to improved performance.
+
+The observation that increasing the window size beyond 80 does not yield significant improvements suggests a saturation point in the useful range of positional information for this task. This could be attributed to the nature of protein secondary structures, which are often determined by interactions within a limited spatial range.
+These findings not only validate the choice of Relative Positional Encoding for this task but also provide insights into the spatial scale of relationships that are most informative for protein secondary structure prediction.
+
 ### CrossEntropyLoss vs FocalLoss vs CombinedLoss
+
+Analyzing the distribution of secondary structure classes within the datasets, I observed a significant imbalance among the classes. In particular, classes **B** and **I** are severely underrepresented. So, after an initial cycle of runs using **CrossEntropyLoss**, I considered introducing a new loss function, **FocalLoss**, to address this imbalance and increase sensitivity towards the classification of rarer classes.
 
 <p float="left", align="center">
   <img src="https://github.com/giovancombo/ProteinSecondaryStructurePrediction/blob/main/images/results/plots/rel_abs%20%2B%20focal_ce_combined.png" width="49%" />
+</p>
+
+However, FocalLoss not only failed to correctly classify elements of rare classes but, due to its nature of reducing confidence in classifications of more frequent classes, it introduced more errors, significantly lowering the overall accuracy.
+
+As a compromise, I attempted to implement a **CombinedLoss**, in which CrossEntropyLoss and FocalLoss contribute to the learning process with adjustable weights. Nevertheless, I recognized that this approach requires numerous experimental runs to determine the optimal setting, thus leaving the investigation of its effectiveness as future work.
+
+### Softmax Temperature
+
+<p float="left", align="center">
+  <img src="https://github.com/giovancombo/ProteinSecondaryStructurePrediction/blob/main/images/results/plots/softmax_temperature.png" width="60%" />
 </p>
 
 ### Gradient clipping
 
 <p float="left", align="center">
   <img src="https://github.com/giovancombo/ProteinSecondaryStructurePrediction/blob/main/images/results/plots/grad_clipping.png" width="60%" />
-</p>
-
-### Softmax Temperature
-
-<p float="left", align="center">
-  <img src="https://github.com/giovancombo/ProteinSecondaryStructurePrediction/blob/main/images/results/plots/softmax_temperature.png" width="60%" />
 </p>
 
 ### Pre- vs Post-LayerNorm
@@ -262,8 +289,6 @@ This processing left me with a final dataset configuration consisting of:
   <img src="https://github.com/giovancombo/ProteinSecondaryStructurePrediction/blob/main/images/results/plots/truncated.png" width="49%" />
   <img src="https://github.com/giovancombo/ProteinSecondaryStructurePrediction/blob/main/images/results/plots/removed_gradclip.png" width="49%" />
 </p>
-
-
 
 ---
 
