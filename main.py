@@ -47,6 +47,7 @@ TRAIN_PATH = config['TRAIN_PATH']
 TEST_PATH = config['TEST_PATH']
 
 filter_proteins_by_length = config['filter_proteins_by_length']
+truncate_proteins = config['truncate_proteins']
 min_len = config['min_len']
 max_len = config['max_len']
 
@@ -68,6 +69,7 @@ gamma_scheduler = config['gamma_scheduler']
 learning_rate = config['learning_rate']
 weight_decay = config['weight_decay']
 dropout = config['dropout']
+softmax_temperature = config['softmax_temperature']
 
 loss_function = config['loss_function']
 label_smoothing = config['label_smoothing']
@@ -104,6 +106,9 @@ if __name__ == "__main__":
 
         cullpdb_data = filtered_cullpdb_data
 
+    if truncate_proteins:
+        cullpdb_data = cullpdb_data[:, min_len:max_len, :]
+
     # One-hot and integer aminoacid residues
     train_residues_1h = cullpdb_data[:,:,:21].type(torch.float)     # (3880, 700, 21)
     test_residues_1h = cb513_data[:,:,:21].type(torch.float)        # (513, 700, 21)
@@ -135,7 +140,7 @@ if __name__ == "__main__":
     testloader = DataLoader(test_set, batch_size = batch_size, shuffle = False)
 
     # Instantiating the model, optimizer, scheduler and criterion
-    model = ProteinTransformer(aminoacids, embd_dim, classes, n_heads, n_layers, max_relative_position, clf_hid_dim, dropout, device, seed = config['seed']).to(device)
+    model = ProteinTransformer(aminoacids, embd_dim, classes, n_heads, n_layers, max_relative_position, clf_hid_dim, dropout, softmax_temperature, device, seed = config['seed']).to(device)
     n_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
     print("Number of model parameters: ", n_params)
 
