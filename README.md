@@ -194,21 +194,76 @@ This processing left me with a final dataset configuration consisting of:
 
 ## 6 - Ablation studies
 
-- Adam vs SGD
-- One-Hot residues vs Embedded
-- Residues + PSSM vs only PSSM
-- Absolute vs Relative Pos Encoding
-- Pre- vs Post-LayerNorm
-- All proteins vs truncated vs removed
-- Weight initialization
-- Label Smoothing
-- CELoss vs FocalLoss vs CombinedLoss
-- Gradient clipping
-- Softmax Temperature
-- Weight Decay
-- Dropout
-- Max Relative Position
-- Pretraining on filtered data + Finetuning on all data
+### One-Hot residues vs Embedded
+
+<p float="left", align="center">
+  <img src="https://github.com/giovancombo/ProteinSecondaryStructurePrediction/blob/main/images/results/plots/embedding_vs_onehot.png" width="60%" />
+</p>
+
+### Residues + PSSM vs only PSSM
+
+<p float="left", align="center">
+  <img src="https://github.com/giovancombo/ProteinSecondaryStructurePrediction/blob/main/images/results/plots/pssm_only.png" width="60%" />
+</p>
+
+### Absolute vs Relative Pos Encoding
+
+<p float="left", align="center">
+  <img src="https://github.com/giovancombo/ProteinSecondaryStructurePrediction/blob/main/images/results/plots/rel_abs%20%2B%20focal_ce_combined.png" width="49%" />
+  <img src="https://github.com/giovancombo/ProteinSecondaryStructurePrediction/blob/main/images/results/plots/max_rel_position.png" width="49%" />
+</p>
+
+### CrossEntropyLoss vs FocalLoss vs CombinedLoss
+
+<p float="left", align="center">
+  <img src="https://github.com/giovancombo/ProteinSecondaryStructurePrediction/blob/main/images/results/plots/rel_abs%20%2B%20focal_ce_combined.png" width="49%" />
+</p>
+
+### Gradient clipping
+
+<p float="left", align="center">
+  <img src="https://github.com/giovancombo/ProteinSecondaryStructurePrediction/blob/main/images/results/plots/grad_clipping.png" width="60%" />
+</p>
+
+### Softmax Temperature
+
+<p float="left", align="center">
+  <img src="https://github.com/giovancombo/ProteinSecondaryStructurePrediction/blob/main/images/results/plots/softmax_temperature.png" width="60%" />
+</p>
+
+### Pre- vs Post-LayerNorm
+
+<p float="left", align="center">
+  <img src="https://github.com/giovancombo/ProteinSecondaryStructurePrediction/blob/main/images/results/plots/layernorm.png" width="60%" />
+</p>
+
+### Adam vs SGD
+
+<p float="left", align="center">
+  <img src="https://github.com/giovancombo/ProteinSecondaryStructurePrediction/blob/main/images/results/plots/optimizer.png" width="60%" />
+</p>
+
+### Weight Decay
+
+<p float="left", align="center">
+  <img src="https://github.com/giovancombo/ProteinSecondaryStructurePrediction/blob/main/images/results/plots/weightdecay_train.png" width="49%" />
+  <img src="https://github.com/giovancombo/ProteinSecondaryStructurePrediction/blob/main/images/results/plots/weightdecay_validation.png" width="49%" />
+</p>
+
+### Dropout
+
+<p float="left", align="center">
+  <img src="https://github.com/giovancombo/ProteinSecondaryStructurePrediction/blob/main/images/results/plots/dropout.png" width="60%" />
+</p>
+
+### All proteins vs truncated vs removed
+
+<p float="left", align="center">
+  <img src="https://github.com/giovancombo/ProteinSecondaryStructurePrediction/blob/main/images/results/plots/truncated.png" width="49%" />
+  <img src="https://github.com/giovancombo/ProteinSecondaryStructurePrediction/blob/main/images/results/plots/removed_gradclip.png" width="49%" />
+</p>
+
+
 
 ---
 
