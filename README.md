@@ -121,7 +121,7 @@ The current trend is towards hybrid models that combine different architectures.
 | 2019 | DeepACLSTM [(11)](https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-019-2940-0) | - | 70.5 |
 | 2020 | F1DCNN-SS [(12)](https://www.eurekaselect.com/article/103754) | 74.1 | 70.5 |
 | 2022 | MCNN-PSSP [(13)](https://www.frontiersin.org/journals/bioengineering-and-biotechnology/articles/10.3389/fbioe.2022.901018/full) | 74.2 | 70.6 |
-| 2024 | **DL23-PSSP** | - | **69.2** |
+| 2024 | **DL23-PSSP** | **72.1** | **69.2** |
 
 This table presents an overview of major contributions to the field of Protein Secondary Structure Prediction (PSSP) over the past decade. Results achieved by these works reveal an apparent performance ceiling that has been challenging to surpass. Specifically, the Q8 accuracy on the CB513 dataset seems to plateau around 70-71%, while performance on the CullPDB dataset reaches up to about 75%.
 
