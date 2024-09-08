@@ -12,17 +12,19 @@ n_heads: 8                          # Number of Self-Attention heads
 n_layers: 4                         # Number of EncoderLayers of the Transformer
 clf_hid_dim: 128                    # Hidden dimension of the Classification Head
 
-filter_proteins_by_length: False    # Whether to remove proteins less than min_len or greater than max_len aminoacids - It only affects the training set
-min_len: 50                         # Minimum length of the protein
-max_len: 680                        # Maximum length of the protein
+filter_proteins_by_length: True     # Whether to remove proteins less than min_len or greater than max_len aminoacids - It only affects the training set
+truncate_proteins: False            # Whether to truncate proteins to [min_len : max_len]
+min_len: 50                         # Minimum length of the protein / Index of the first aminoacid in the truncated proteins
+max_len: 680                        # Maximum length of the protein / Index of the last aminoacid in the truncated proteins
 
 # Training settings
 batch_size: 8
-epochs: 15
+epochs: 40
 gamma_scheduler: 0.1
 learning_rate: 0.001
-weight_decay: 0.0001
+weight_decay: 0.00006
 dropout: 0.
+softmax_temperature: 5.             # Temperature for the Softmax
 
 loss_function: "crossentropy"       # {"crossentropy", "focal", "combined"}
 focalloss_alpha: 0.5
@@ -31,7 +33,7 @@ ce_weight: 0.30                     # Weight for CrossEntropy loss importance in
 focal_weight: 0.70                  # Weight for Focal loss importance in the Combined loss
 label_smoothing: 0.
 gradient_clipping: True
-max_grad_norm: 1.0                  # Gradient clipping
+max_grad_norm: 0.8                  # Gradient clipping
 max_relative_position: 80           # Window size for the Relative Positional Encoding
 
 # Logging settings
