@@ -25,18 +25,21 @@ class RelativePositionalEncoding(nn.Module):
     positional relationships.
 
     Attributes:
-        n_heads (int): Number of attention heads.
+        head_size (int): Dimension of each attention head.
         max_relative_position (int): Maximum relative distance between sequence elements.
         embd (nn.Parameter): Learnable relative position embeddings.
     """
 
-    def __init__(self, n_heads, max_relative_position):
+    def __init__(self, head_size, max_relative_position):
         super().__init__()
 
-        self.n_heads = n_heads
+        self.head_size = head_size
         self.max_relative_position = max_relative_position
-        self.embd = nn.Parameter(torch.Tensor(max_relative_position * 2 + 1, n_heads))
+        self.embd = nn.Parameter(torch.Tensor(max_relative_position * 2 + 1, self.head_size))
+        self.scaling = nn.Parameter(torch.Tensor(1))
+
         nn.init.xavier_uniform_(self.embd)
+        nn.init.constant_(self.scaling, 1.0)
 
     def forward(self, len_q, len_k):
         device = self.embd.device
@@ -44,11 +47,15 @@ class RelativePositionalEncoding(nn.Module):
         range_k = torch.arange(len_k, device = device)
 
         rel_pos = range_q[None, :] - range_k[:, None]
+        # scaled_rel_pos = torch.exp(-torch.abs(rel_pos).float() / (self.max_relative_position * self.scaling))
+
         rel_pos = torch.clamp(rel_pos, - self.max_relative_position, self.max_relative_position)
         rel_pos += self.max_relative_position
-        rel_pos = rel_pos.to(torch.long)
+        rel_pos = rel_pos.to(torch.long)            # (len_q, len_k)
 
-        return self.embd[rel_pos]
+        embeddings = self.embd[rel_pos]                   # (len_q, len_k, head_size)
+
+        return embeddings #* scaled_rel_pos.unsqueeze(-1)
     
 
 class MultiHeadAttention(nn.Module):
@@ -77,16 +84,12 @@ class MultiHeadAttention(nn.Module):
         super().__init__()
         set_seed(seed)
 
-        assert d_model % n_heads == 0, "d_model (= embed_dim + 21) must be divisible by n_heads"
+        assert d_model % n_heads == 0, "d_model (= embed_dim) must be divisible by n_heads"
         
         self.d_model = d_model
         self.n_heads = n_heads
         self.head_size = d_model // n_heads
         self.max_relative_position = max_relative_position
-
-        self.fc_k = nn.Linear(d_model, d_model)
-        self.fc_q = nn.Linear(d_model, d_model)
-        self.fc_v = nn.Linear(d_model, d_model)
 
         self.fc_kqv = nn.Linear(d_model, 3 * d_model)
         self.fc_o = nn.Linear(d_model, d_model)
@@ -97,7 +100,7 @@ class MultiHeadAttention(nn.Module):
         self.rel_pos_k = RelativePositionalEncoding(self.head_size, self.max_relative_position)
         self.rel_pos_v = RelativePositionalEncoding(self.head_size, self.max_relative_position)
 
-        for layer in [self.fc_k, self.fc_q, self.fc_v, self.fc_kqv, self.fc_o]:
+        for layer in [self.fc_kqv, self.fc_o]:
             nn.init.xavier_uniform_(layer.weight)
             nn.init.zeros_(layer.bias)
         
@@ -125,9 +128,12 @@ class MultiHeadAttention(nn.Module):
 
         # Masking
         if mask is not None:
+            mask = mask.unsqueeze(1).unsqueeze(2)                                               # (batch_size, 1, 1, len_k)
+            mask = mask.expand(-1, self.n_heads, -1, -1)
             attn = attn.masked_fill(mask == 0, float('-inf'))
 
         attn = self.dropout(torch.softmax(attn, dim = -1))                                          # (batch_size, n_heads, query_len, key_len)
+        
         rel_v1 = value.view(batch_size, -1, self.n_heads, self.head_size).permute(0, 2, 1, 3)       # (8,7,700,7)
         cxt_1 = torch.matmul(attn, rel_v1)                                                          # (8,7,700,7)
 
@@ -143,7 +149,7 @@ class MultiHeadAttention(nn.Module):
         output = self.fc_o(context)                                     # (batch_size, query_len, d_model)
 
         return output                                                   # (8, 700, 49)
-    
+
 
 class FeedForward(nn.Module):
     def __init__(self, d_model):
@@ -196,6 +202,15 @@ class EncoderLayer(nn.Module):
     def forward(self, x, mask = None):                  # Input: (batch_size, len, d_model)
         # Note: the original paper puts LayerNorms after each sublayer, but it was found that putting them before gives better results
         # There's no Dropout here in the original paper
+        
+        # attn_input = self.layernorm_1(x)
+        # attn_output = self.multi_attn(attn_input, mask)
+        # out = x + self.dropout(attn_output)
+
+        # ffwd_input = self.layernorm_2(out)
+        # ffwd_output = self.ffwd(ffwd_input)
+        # h = out + self.dropout(ffwd_output)
+
         out = self.layernorm_1(x + self.dropout(self.multi_attn(x, mask)))
         h = self.layernorm_2(out + self.ffwd(out))
 
@@ -282,11 +297,12 @@ class ProteinTransformer(nn.Module):
         max_relative_position (int): Maximum relative distance for relative positional encoding.
         clf_hid_dim (int): Hidden dimension of the classification head.
         dropout (float): Dropout rate.
+        temperature (float): Temperature for softmax.
         device (torch.device): Device (CPU or GPU) to run the module on.
         seed (int): Random seed for reproducibility.
     """
 
-    def __init__(self, vocab_size, embd_dim, classes, n_heads, n_layers, max_relative_position, clf_hid_dim, dropout, device, seed = 42):
+    def __init__(self, vocab_size, embd_dim, classes, n_heads, n_layers, max_relative_position, clf_hid_dim, dropout, temperature, device, seed = 42):
         super().__init__()
         set_seed(seed)
 
@@ -294,6 +310,7 @@ class ProteinTransformer(nn.Module):
         d_model = embd_dim + 21
         self.encoder = Encoder(d_model, n_heads, n_layers, max_relative_position, dropout, device, seed)
         self.clf = ClassificationHead(d_model, clf_hid_dim, classes, dropout)
+        self.temperature = temperature
 
         nn.init.normal_(self.embd.weight, mean=0, std=d_model**-0.5)
 
@@ -301,6 +318,6 @@ class ProteinTransformer(nn.Module):
         amino_embd = self.embd(x_amino)
         x = torch.cat((amino_embd, x_pssm), -1)                 # (batch_size, len, embd_dim + 21)
         out = self.encoder(x, mask)                             # (batch_size, len, embd_dim + 21)
-        out = self.clf(out)                                     # (batch_size, len, classes)
+        logits = self.clf(out)                                  # (batch_size, len, classes)
 
-        return out
+        return logits / self.temperature
