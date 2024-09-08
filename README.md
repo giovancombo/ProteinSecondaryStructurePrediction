@@ -194,7 +194,7 @@ This processing left me with a final dataset configuration consisting of:
 
 ## 6 - Ablation studies
 
-### Residues + PSSM vs only PSSM
+### Data structure
 
 The first aspect I had to consider was the sizing of the dataset, integrating the necessary features in the best format for the Protein Prediction task. Aware of the Transformer architecture, understanding the advantages of using embeddings, and recognizing that PSSMs can be viewed as embedding vectors related to the position in the protein, I initially thought that PSSP could be conducted using only PSSMs.
 
@@ -220,7 +220,7 @@ The performance analysis, as illustrated in the graph, reveals that the use of o
 
 This observed phenomenon underscores the robustness of the Transformer architecture in extracting relevant information from various input representations, while also highlighting the significant contribution of PSSM features in the protein secondary structure prediction task.
 
-### Absolute vs Relative Pos Encoding
+### Positional Encoding
 
 **Relative Positional Encoding** proves to be vital in executing this task. Proteins exhibit highly variable lengths, and secondary structure is predominantly dependent on local relationships rather than the absolute position of an amino acid within the protein. *Absolute Positional Encoding*, which is usually employed in common tasks with Transformers and other Attention models, here does not scale well with sequences of variable length, where examination of local relationships is crucial. Relative Positional Encoding is more suitable because it is invariant to protein length.
 
@@ -234,7 +234,7 @@ Adopting Relative Positional Encoding, I introduce a hyperparameter, **max_rel_p
 The observation that increasing the window size beyond 80 does not yield significant improvements suggests a saturation point in the useful range of positional information for this task. This could be attributed to the nature of protein secondary structures, which are often determined by interactions within a limited spatial range.
 These findings not only validate the choice of Relative Positional Encoding for this task but also provide insights into the spatial scale of relationships that are most informative for protein secondary structure prediction.
 
-### CrossEntropyLoss vs FocalLoss vs CombinedLoss
+### Loss Function
 
 Analyzing the distribution of secondary structure classes within the datasets, I observed a significant imbalance among the classes. In particular, classes **B** and **I** are severely underrepresented. So, after an initial cycle of runs using **CrossEntropyLoss**, I considered introducing a new loss function, **FocalLoss**, to address this imbalance and increase sensitivity towards the classification of rarer classes.
 
@@ -248,23 +248,29 @@ As a compromise, I attempted to implement a **CombinedLoss**, in which CrossEntr
 
 ### Softmax Temperature
 
+Based on its frequent application in various other deep learning techniques, I decided to introduce a *Temperature* parameter applied to the logits output from the Classification Head (MLP), implemented as the actual output of the Transformer is $logit / temperature$. The purpose of this parameter is to scale the output logits from the Transformer, artificially increasing the uncertainty of the classification and thereby giving less probable classes a higher chance of being selected.
+
 <p float="left", align="center">
   <img src="https://github.com/giovancombo/ProteinSecondaryStructurePrediction/blob/main/images/results/plots/softmax_temperature.png" width="60%" />
 </p>
 
-### Gradient clipping
+Higher Temperature values lead to more "uncertain" classifications. A value of 5 proved to be promising, yielding better results compared to the default value of 1.
+
+The Temperature parameter effectively serves as a smoothing factor for the softmax function that follows the logit computation. By dividing the logits by a temperature value greater than 1, we're reducing the magnitude of differences between logits before they're passed through the softmax. This has the effect of producing a more uniform probability distribution across classes.
+
+### Gradient Clipping
 
 <p float="left", align="center">
   <img src="https://github.com/giovancombo/ProteinSecondaryStructurePrediction/blob/main/images/results/plots/grad_clipping.png" width="60%" />
 </p>
 
-### Pre- vs Post-LayerNorm
+### Layer Normalization
 
 <p float="left", align="center">
   <img src="https://github.com/giovancombo/ProteinSecondaryStructurePrediction/blob/main/images/results/plots/layernorm.png" width="60%" />
 </p>
 
-### Adam vs SGD
+### Optimizer
 
 <p float="left", align="center">
   <img src="https://github.com/giovancombo/ProteinSecondaryStructurePrediction/blob/main/images/results/plots/optimizer.png" width="60%" />
@@ -283,7 +289,7 @@ As a compromise, I attempted to implement a **CombinedLoss**, in which CrossEntr
   <img src="https://github.com/giovancombo/ProteinSecondaryStructurePrediction/blob/main/images/results/plots/dropout.png" width="60%" />
 </p>
 
-### All proteins vs truncated vs removed
+### Protein filtering
 
 <p float="left", align="center">
   <img src="https://github.com/giovancombo/ProteinSecondaryStructurePrediction/blob/main/images/results/plots/truncated.png" width="49%" />
