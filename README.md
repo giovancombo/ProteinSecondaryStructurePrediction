@@ -306,6 +306,8 @@ The Temperature parameter effectively serves as a smoothing factor for the softm
   <img src="https://github.com/giovancombo/ProteinSecondaryStructurePrediction/blob/main/images/results/plots/removed_gradclip.png" width="49%" />
 </p>
 
+### Alternative idea: Pre-Training + Fine-Tuning
+
 ---
 
 ## 7 - Conclusion
