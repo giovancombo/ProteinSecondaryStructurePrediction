@@ -292,6 +292,16 @@ The Temperature parameter effectively serves as a smoothing factor for the softm
 ### Protein filtering
 
 <p float="left", align="center">
+  <img src="https://github.com/giovancombo/ProteinSecondaryStructurePrediction/blob/main/images/dataset_analysis/protein_length_distribution_cullpdb_original.png" width="49%" />
+  <img src="https://github.com/giovancombo/ProteinSecondaryStructurePrediction/blob/main/images/dataset_analysis/protein_length_distribution_cb513_original.png" width="49%" />
+</p>
+
+<p float="left", align="center">
+  <img src="https://github.com/giovancombo/ProteinSecondaryStructurePrediction/blob/main/images/dataset_analysis/amino_acid_distribution_cullpdb_orig_vs_300.png" width="49%" />
+  <img src="https://github.com/giovancombo/ProteinSecondaryStructurePrediction/blob/main/images/dataset_analysis/amino_acid_distribution_cb513_orig_vs_300.png" width="49%" />
+</p>
+
+<p float="left", align="center">
   <img src="https://github.com/giovancombo/ProteinSecondaryStructurePrediction/blob/main/images/results/plots/truncated.png" width="49%" />
   <img src="https://github.com/giovancombo/ProteinSecondaryStructurePrediction/blob/main/images/results/plots/removed_gradclip.png" width="49%" />
 </p>
