@@ -188,6 +188,10 @@ This processing left me with a final dataset configuration consisting of:
 
 This table presents an overview of major contributions to the field of Protein Secondary Structure Prediction (PSSP) over the past decade. Results achieved by these works reveal an apparent performance ceiling that has been challenging to surpass. Specifically, the Q8 accuracy on the CB513 dataset seems to plateau around 70-71%, while performance on the CullPDB dataset reaches up to about 75%.
 
+<p float="left", align="center">
+  <img src="https://github.com/giovancombo/ProteinSecondaryStructurePrediction/blob/main/images/results/plots/cullpdb_cb513_test.png" width="60%" />
+</p>
+
 A particular configuration of my model, **DL23-PSSP** achieves a Q8 accuracy of 72.1% on the test split of CullPDB and 69.2% on the entire CB513, resulting competitive among other recent approaches. In my evaluation, I tried to maintain methodological consistency with previous studies. This approach ensures a fair comparison within the established benchmarking framework of the field.
 
 ---
@@ -239,7 +243,7 @@ These findings not only validate the choice of Relative Positional Encoding for 
 Analyzing the distribution of secondary structure classes within the datasets, I observed a significant imbalance among the classes. In particular, classes **B** and **I** are severely underrepresented. So, after an initial cycle of runs using **CrossEntropyLoss**, I considered introducing a new loss function, **FocalLoss**, to address this imbalance and increase sensitivity towards the classification of rarer classes.
 
 <p float="left", align="center">
-  <img src="https://github.com/giovancombo/ProteinSecondaryStructurePrediction/blob/main/images/results/plots/rel_abs%20%2B%20focal_ce_combined.png" width="49%" />
+  <img src="https://github.com/giovancombo/ProteinSecondaryStructurePrediction/blob/main/images/results/plots/rel_abs_focal_ce_combined.png" width="60%" />
 </p>
 
 However, FocalLoss not only failed to correctly classify elements of rare classes but, due to its nature of reducing confidence in classifications of more frequent classes, it introduced more errors, significantly lowering the overall accuracy.
