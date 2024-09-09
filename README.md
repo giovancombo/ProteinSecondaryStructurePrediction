@@ -106,27 +106,6 @@ Recent years have seen the emergence of attention mechanisms and transformer arc
 
 The current trend is towards hybrid models that combine different architectures. OPUS-TASS (Xu et al., 2020) integrates CNNs, bidirectional LSTMs, and transformer layers, achieving high accuracy in both 3-state and 8-state predictions.
 
-| Year     | Method  | Q8 Accuracy on CullPDB (%) | Q8 Accuracy on CB513 (%) |
-| :----: | :----: | :----: | :----: |
-| 2011 | RaptorX-SS [(1)](http://raptorx6.uchicago.edu/StructurePropertyPred/predict/) | 69.7 | 64.9 |
-| 2014 | **SC-GSN** [(2)](https://arxiv.org/abs/1403.1347) | 72.1 | 66.4 |
-| 2016 | DeepCNF [(3)](https://arxiv.org/abs/1512.00843) | 75.2 | 68.3 |
-| 2016 | DCRNN [(4)](https://arxiv.org/abs/1604.07176) | - | 70.4 |
-| 2016 | MUST-CNN [(5)](https://arxiv.org/pdf/1605.03004) | - | 68.4 |
-| 2016 | SSREDN [(6)](https://www.sciencedirect.com/science/article/abs/pii/S0950705116304713) | 73.1 | 68.2 |
-| 2018 | CNNH_PSS [(7)](https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-018-2067-8) | 74.0 | 70.3 |
-| 2018 | MUFOLD-SS [(8)](https://arxiv.org/abs/1709.06165) | - | 73.4 |
-| 2018 | CRRNN [(9)](https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-018-2280-5) | - | 71.4 |
-| 2019 | Contextnet [(10)](https://pubs.rsc.org/en/content/articlelanding/2019/ra/c9ra05218f) | - | 71.9 |
-| 2019 | DeepACLSTM [(11)](https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-019-2940-0) | - | 70.5 |
-| 2020 | F1DCNN-SS [(12)](https://www.eurekaselect.com/article/103754) | 74.1 | 70.5 |
-| 2022 | MCNN-PSSP [(13)](https://www.frontiersin.org/journals/bioengineering-and-biotechnology/articles/10.3389/fbioe.2022.901018/full) | 74.2 | 70.6 |
-| 2024 | **DL23-PSSP** | **72.1** | **69.2** |
-
-This table presents an overview of major contributions to the field of Protein Secondary Structure Prediction (PSSP) over the past decade. Results achieved by these works reveal an apparent performance ceiling that has been challenging to surpass. Specifically, the Q8 accuracy on the CB513 dataset seems to plateau around 70-71%, while performance on the CullPDB dataset reaches up to about 75%.
-
-A particular configuration of my model, **DL23-PSSP**, which I will present in the next section, achieves a Q8 accuracy of 69.2% on CB513, resulting competitive among other recent approaches. In my evaluation, I tried to maintain methodological consistency with previous studies, particularly in using the entire CullPDB dataset for training and the entire CB513 for validation and testing. This approach ensures a fair comparison within the established benchmarking framework of the field.
-
 ---
 
 ## 3 - Method
@@ -189,6 +168,27 @@ This processing left me with a final dataset configuration consisting of:
 ---
 
 ## 5 - Results
+
+| Year     | Method  | Q8 Accuracy on CullPDB (%) | Q8 Accuracy on CB513 (%) |
+| :----: | :----: | :----: | :----: |
+| 2011 | RaptorX-SS [(1)](http://raptorx6.uchicago.edu/StructurePropertyPred/predict/) | 69.7 | 64.9 |
+| 2014 | **SC-GSN** [(2)](https://arxiv.org/abs/1403.1347) | 72.1 | 66.4 |
+| 2016 | DeepCNF [(3)](https://arxiv.org/abs/1512.00843) | 75.2 | 68.3 |
+| 2016 | DCRNN [(4)](https://arxiv.org/abs/1604.07176) | - | 70.4 |
+| 2016 | MUST-CNN [(5)](https://arxiv.org/pdf/1605.03004) | - | 68.4 |
+| 2016 | SSREDN [(6)](https://www.sciencedirect.com/science/article/abs/pii/S0950705116304713) | 73.1 | 68.2 |
+| 2018 | CNNH_PSS [(7)](https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-018-2067-8) | 74.0 | 70.3 |
+| 2018 | MUFOLD-SS [(8)](https://arxiv.org/abs/1709.06165) | - | 73.4 |
+| 2018 | CRRNN [(9)](https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-018-2280-5) | - | 71.4 |
+| 2019 | Contextnet [(10)](https://pubs.rsc.org/en/content/articlelanding/2019/ra/c9ra05218f) | - | 71.9 |
+| 2019 | DeepACLSTM [(11)](https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-019-2940-0) | - | 70.5 |
+| 2020 | F1DCNN-SS [(12)](https://www.eurekaselect.com/article/103754) | 74.1 | 70.5 |
+| 2022 | MCNN-PSSP [(13)](https://www.frontiersin.org/journals/bioengineering-and-biotechnology/articles/10.3389/fbioe.2022.901018/full) | 74.2 | 70.6 |
+| 2024 | **DL23-PSSP** | **72.1** | **69.2** |
+
+This table presents an overview of major contributions to the field of Protein Secondary Structure Prediction (PSSP) over the past decade. Results achieved by these works reveal an apparent performance ceiling that has been challenging to surpass. Specifically, the Q8 accuracy on the CB513 dataset seems to plateau around 70-71%, while performance on the CullPDB dataset reaches up to about 75%.
+
+A particular configuration of my model, **DL23-PSSP** achieves a Q8 accuracy of 72.1% on the test split of CullPDB and 69.2% on the entire CB513, resulting competitive among other recent approaches. In my evaluation, I tried to maintain methodological consistency with previous studies. This approach ensures a fair comparison within the established benchmarking framework of the field.
 
 ---
 
