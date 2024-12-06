@@ -158,9 +158,9 @@ This processing left me with a final dataset configuration consisting of:
 - 42 features describing the primary structure: 21 amino acid residues + 21 PSSMs.
 - 9 one-hot targets: 8 secondary structures + the NoSeq class, which is crucial for generating the padding mask.
 
-### More
+### More (subsection under development)
 
-- Riproducibility
+- Reproducibility
 - Optimizer, Loss, Scheduler, HPs
 - Epochs, batch size, device
 - Index of github scripts w requirements
@@ -233,7 +233,7 @@ This observed phenomenon underscores the robustness of the Transformer architect
   <img src="https://github.com/giovancombo/ProteinSecondaryStructurePrediction/blob/main/images/results/plots/max_rel_position.png" width="49%" />
 </p>
 
-Adopting Relative Positional Encoding, I introduce a hyperparameter, **max_rel_position**, which determines the radius of the window within which local relationships are considered for each element $x$, fixed to the interval $[x - max_rel_position : x + max_rel_position]$. The optimal window size is found to be 80, but it is evident that proteins in the dataset can generally be classified well using short-range relationships, as performance remains comparable even with a window radius of 10. Conversely, an excessively small window significantly degrades performance. This suggests that long-range relationships are either few in number or are not the primary contributors to improved performance.
+Adopting Relative Positional Encoding, I introduce a hyperparameter, **max_rel_position**, which determines the radius of the window within which local relationships are considered for each element $x$, fixed to the interval $[x - max_{relPosition} : x + max_{relPosition}]$. The optimal window size is found to be 80, but it is evident that proteins in the dataset can generally be classified well using short-range relationships, as performance remains comparable even with a window radius of 10. Conversely, an excessively small window significantly degrades performance. This suggests that long-range relationships are either few in number or are not the primary contributors to improved performance.
 
 The observation that increasing the window size beyond 80 does not yield significant improvements suggests a saturation point in the useful range of positional information for this task. This could be attributed to the nature of protein secondary structures, which are often determined by interactions within a limited spatial range.
 These findings not only validate the choice of Relative Positional Encoding for this task but also provide insights into the spatial scale of relationships that are most informative for protein secondary structure prediction.
